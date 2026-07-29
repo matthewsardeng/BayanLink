@@ -443,6 +443,15 @@ export function BarangayMap({
           onPick(lat, lng);
         }}
       >
+        {/* Ctrl + Scroll Hint Overlay Banner */}
+        {showCtrlHint && (
+          <div className="absolute inset-0 z-40 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px] pointer-events-none transition-all duration-300">
+            <div className="bg-zinc-900/95 text-white px-5 py-2.5 rounded-full border border-white/20 shadow-2xl font-mono text-xs flex items-center gap-2">
+              <span>Use <strong>Ctrl + scroll</strong> to zoom the map</span>
+            </div>
+          </div>
+        )}
+
         {/* CartoDB Positron Raster Tile Grid */}
         <div className="absolute inset-0 pointer-events-none">
           {(() => {
@@ -497,6 +506,9 @@ export function BarangayMap({
             <button
               key={it.id}
               type="button"
+              onPointerDown={(e) => {
+                e.stopPropagation();
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 handlePinClick(it.id);
@@ -506,7 +518,7 @@ export function BarangayMap({
               style={{ left: mx, top: my }}
               aria-label={`${it.category}: ${it.title}`}
               className={cn(
-                "absolute -translate-x-1/2 -translate-y-full focus:outline-none transition-transform duration-150 pointer-events-auto",
+                "absolute -translate-x-1/2 -translate-y-full focus:outline-none transition-transform duration-150 pointer-events-auto cursor-pointer",
                 active ? "z-30 scale-110" : "z-10 hover:scale-105"
               )}
             >
