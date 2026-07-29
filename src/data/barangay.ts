@@ -95,6 +95,22 @@ export function findClosestPurok(lat: number, lng: number): string {
   return closestPurok;
 }
 
+export const BALIBAGO_BOUNDS = {
+  minLat: 15.1500,
+  maxLat: 15.1800,
+  minLng: 120.5750,
+  maxLng: 120.6050,
+};
+
+export function isWithinBalibago(lat: number, lng: number): boolean {
+  return (
+    lat >= BALIBAGO_BOUNDS.minLat &&
+    lat <= BALIBAGO_BOUNDS.maxLat &&
+    lng >= BALIBAGO_BOUNDS.minLng &&
+    lng <= BALIBAGO_BOUNDS.maxLng
+  );
+}
+
 export type TimelineEntry = {
   status: IssueStatus;
   at: string;

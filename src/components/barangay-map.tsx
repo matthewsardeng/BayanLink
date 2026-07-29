@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { BARANGAY_INFO, categoryColor, CATEGORIES, type Issue, type IssueCategory } from "@/data/barangay";
+import { BARANGAY_INFO, categoryColor, CATEGORIES, isWithinBalibago, type Issue, type IssueCategory } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { StatusPill } from "@/components/status";
 import {
@@ -26,6 +26,7 @@ import {
   Thermometer,
   Wind,
   Droplet,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -121,6 +122,7 @@ export function BarangayMap({
   // Layers Toggles
   const [showTraffic, setShowTraffic] = useState(false);
   const [showWeather, setShowWeather] = useState(true);
+  const [boundsWarning, setBoundsWarning] = useState<string | null>(null);
 
   // Live Weather State (Open-Meteo API for Balibago)
   const [weather, setWeather] = useState<WeatherData | null>({
@@ -145,7 +147,9 @@ export function BarangayMap({
       setCenter({ lat: mapCenter.lat, lng: mapCenter.lng });
     }
   }, [mapCenter?.lat, mapCenter?.lng]);
-  const drag = useRef<{ x: number; y: number } | null>(null);
+
+  const isDragging = useRef(false);
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const activeSelectedId = externalSelectedId ?? internalSelectedId;
@@ -222,6 +226,14 @@ export function BarangayMap({
     setCenter({ lat: clampedLat, lng: clampedLng });
   };
 
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY < 0) {
+      setZoom((z) => Math.min(18, z + 1));
+    } else if (e.deltaY > 0) {
+      setZoom((z) => Math.max(12, z - 1));
+    }
+  };
+
   const handlePinClick = (id: string) => {
     setInternalSelectedId(id);
     onSelect?.(id);
@@ -240,12 +252,21 @@ export function BarangayMap({
         className
       )}
       ref={containerRef}
+      onWheel={handleWheel}
     >
+      {/* Out of Bounds Warning Banner */}
+      {boundsWarning && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg border border-amber-600 animate-bounce">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>{boundsWarning}</span>
+        </div>
+      )}
+
       {/* Layer & Zoom Controls in Top Right */}
       <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-zinc-200 shadow-sm pointer-events-auto">
         {onPick && (
           <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-700 px-2.5 py-0.5 bg-zinc-100 rounded-full mr-1">
-            <Crosshair className="h-3.5 w-3.5 text-zinc-900" /> Click map to pick location
+            <Crosshair className="h-3.5 w-3.5 text-zinc-900" /> Scroll to zoom · Click to pick
           </span>
         )}
 
@@ -263,35 +284,35 @@ export function BarangayMap({
           <Car className="h-3.5 w-3.5" /> Traffic
         </button>
 
-            <button
-              onClick={() => setZoom((z) => Math.min(18, z + 1))}
-              aria-label="Zoom In"
-              className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setZoom((z) => Math.max(12, z - 1))}
-              aria-label="Zoom Out"
-              className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
-            >
-              <Minus className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => {
-                setZoom(15);
-                setCenter({
-                  lat: BARANGAY_INFO.coordinates.lat,
-                  lng: BARANGAY_INFO.coordinates.lng,
-                });
-              }}
-              aria-label="Recenter"
-              className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
-              title="Recenter Map"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
-          </div>
+        <button
+          onClick={() => setZoom((z) => Math.min(18, z + 1))}
+          aria-label="Zoom In"
+          className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => setZoom((z) => Math.max(12, z - 1))}
+          aria-label="Zoom Out"
+          className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
+        >
+          <Minus className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => {
+            setZoom(15);
+            setCenter({
+              lat: BARANGAY_INFO.coordinates.lat,
+              lng: BARANGAY_INFO.coordinates.lng,
+            });
+          }}
+          aria-label="Recenter"
+          className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
+          title="Recenter Map"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </button>
+      </div>
 
       {/* Live Weather Widget Overlay */}
       {weather && showWeather && !compact && (
@@ -354,20 +375,28 @@ export function BarangayMap({
           onPick ? "cursor-crosshair" : "cursor-grab active:cursor-grabbing"
         )}
         onPointerDown={(e) => {
-          drag.current = { x: e.clientX, y: e.clientY };
-          (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+          dragStart.current = { x: e.clientX, y: e.clientY };
+          isDragging.current = false;
+          (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
         }}
         onPointerMove={(e) => {
-          if (!drag.current) return;
-          const dx = e.clientX - drag.current.x;
-          const dy = e.clientY - drag.current.y;
-          drag.current = { x: e.clientX, y: e.clientY };
+          if (!dragStart.current) return;
+          const dx = e.clientX - dragStart.current.x;
+          const dy = e.clientY - dragStart.current.y;
+          if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            isDragging.current = true;
+          }
+          dragStart.current = { x: e.clientX, y: e.clientY };
           moveCenter(dx, dy);
         }}
-        onPointerUp={() => (drag.current = null)}
-        onPointerLeave={() => (drag.current = null)}
+        onPointerUp={() => {
+          dragStart.current = null;
+        }}
+        onPointerLeave={() => {
+          dragStart.current = null;
+        }}
         onClick={(e) => {
-          if (!onPick) return;
+          if (!onPick || isDragging.current) return;
           const rect = e.currentTarget.getBoundingClientRect();
           const px = left + (e.clientX - rect.left);
           const py = top + (e.clientY - rect.top);
@@ -375,6 +404,14 @@ export function BarangayMap({
           const lng = (px / worldSize) * 360 - 180;
           const n = Math.PI - (2 * Math.PI * py) / worldSize;
           const lat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+
+          if (!isWithinBalibago(lat, lng)) {
+            setBoundsWarning("⚠️ Selected point is outside Barangay Balibago jurisdiction bounds. Please pick a location within Balibago.");
+            setTimeout(() => setBoundsWarning(null), 4000);
+            return;
+          }
+
+          setBoundsWarning(null);
           onPick(lat, lng);
         }}
       >
