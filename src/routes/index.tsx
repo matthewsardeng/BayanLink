@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BARANGAY_INFO, ISSUES, SERVICES, PUROKS, CATEGORIES, type IssueCategory } from "@/data/barangay";
+import { BARANGAY_INFO, BARANGAY_OFFICIALS, ISSUES, SERVICES, PUROKS, CATEGORIES, type IssueCategory } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth-store";
 import { TRANSLATIONS } from "@/lib/i18n";
@@ -17,7 +17,10 @@ import {
   ShieldCheck,
   ArrowRight,
   Phone,
+  PhoneCall,
+  Siren,
   FileCheck,
+  FileText,
   CheckCircle2,
   Building2,
   Users,
@@ -34,6 +37,10 @@ import {
   Calendar,
   Layers,
   ChevronRight,
+  Award,
+  Zap,
+  Trash2,
+  HeartPulse,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -407,8 +414,11 @@ function Landing() {
                 § 03 · Balita mula sa Kapitan
               </span>
               <h2 className="text-3xl font-extrabold text-zinc-900 mt-1">
-                Announcements
+                Announcements & Directives
               </h2>
+              <p className="text-xs text-zinc-500 font-mono mt-1">
+                Official advisories from Punong Barangay Joseph "PG" Ponce
+              </p>
             </div>
             <Link to="/dashboard/announcements" className="text-xs font-mono font-bold text-zinc-900 hover:underline flex items-center gap-1">
               View all →
@@ -416,115 +426,104 @@ function Landing() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <article className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm flex flex-col justify-between">
+            <article className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-all">
               <div className="space-y-3">
                 <div className="flex items-center justify-between font-mono text-xs">
-                  <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                    Health
+                  <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+                    <HeartPulse className="h-3 w-3" /> Health Mission
                   </span>
-                  <span className="text-zinc-500">Aug 02</span>
+                  <span className="text-zinc-500 font-bold">Aug 02</span>
                 </div>
-                <h3 className="text-base font-bold text-zinc-900">
+                <h3 className="text-base font-bold text-zinc-900 leading-snug">
                   Free medical mission at the covered court
                 </h3>
                 <p className="text-xs text-zinc-600 leading-relaxed">
-                  General consult, BP monitoring, and free maintenance meds. Bring your barangay ID.
+                  General consult, BP monitoring, and free maintenance meds for Senior Citizens & PWDs. Bring your barangay ID.
                 </p>
               </div>
+              <span className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-zinc-100 flex items-center gap-1">
+                <Clock className="h-3 w-3" /> 8:00 AM – 1:00 PM · Balibago Covered Court
+              </span>
             </article>
 
-            <article className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm flex flex-col justify-between">
+            <article className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-all">
               <div className="space-y-3">
                 <div className="flex items-center justify-between font-mono text-xs">
-                  <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                    Utilities
+                  <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+                    <Zap className="h-3 w-3" /> Utilities Notice
                   </span>
-                  <span className="text-zinc-500">Jul 31</span>
+                  <span className="text-zinc-500 font-bold">Jul 31</span>
                 </div>
-                <h3 className="text-base font-bold text-zinc-900">
+                <h3 className="text-base font-bold text-zinc-900 leading-snug">
                   Scheduled brownout, Puroks 3–5
                 </h3>
                 <p className="text-xs text-zinc-600 leading-relaxed">
-                  Meralco line maintenance from 9:00 AM to 12:00 PM. Charge devices in advance.
+                  Meralco feeder line maintenance & tree trimming along MacArthur Highway corridor from 9:00 AM to 12:00 PM.
                 </p>
               </div>
+              <span className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-zinc-100 flex items-center gap-1">
+                <Clock className="h-3 w-3" /> 9:00 AM – 12:00 PM · Puroks 3, 4 & 5
+              </span>
             </article>
 
-            <article className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm flex flex-col justify-between">
+            <article className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm flex flex-col justify-between hover:border-zinc-300 transition-all">
               <div className="space-y-3">
                 <div className="flex items-center justify-between font-mono text-xs">
-                  <span className="bg-zinc-100 text-zinc-800 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                    Peace & Order
+                  <span className="bg-zinc-100 text-zinc-800 border border-zinc-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1">
+                    <Users className="h-3 w-3" /> Town Hall Assembly
                   </span>
-                  <span className="text-zinc-500">Aug 04</span>
+                  <span className="text-zinc-500 font-bold">Aug 04</span>
                 </div>
-                <h3 className="text-base font-bold text-zinc-900">
+                <h3 className="text-base font-bold text-zinc-900 leading-snug">
                   Barangay assembly — MacArthur Hwy update
                 </h3>
                 <p className="text-xs text-zinc-600 leading-relaxed">
-                  Kapitan will report on flood mitigation and pedestrian lane rehab.
+                  Kapitan Ponce will present updates on Astro Park flood mitigation culverts, TODA fuel relief, and streetlight expansion.
                 </p>
               </div>
+              <span className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-zinc-100 flex items-center gap-1">
+                <Clock className="h-3 w-3" /> 2:00 PM · Session Hall
+              </span>
             </article>
           </div>
         </div>
       </section>
 
-      {/* SECTION 4: § 04 · ANG INYONG LINGKOD-BAYAN */}
+      {/* SECTION 4: § 04 · ANG INYONG LINGKOD-BAYAN (Verified 2026 Leadership Roster) */}
       <section id="officials" className="py-16 sm:py-24 border-b border-zinc-200 bg-[#fafafa]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <div>
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-              § 04 · Ang inyong lingkod-bayan
-            </span>
-            <h2 className="text-3xl font-extrabold text-zinc-900 mt-1">
-              Officials of Balibago
-            </h2>
-            <p className="text-xs text-zinc-500 font-mono mt-1">
-              Every filed concern is routed to the kagawad in charge. You'll see who's on the ticket.
-            </p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
+                § 04 · Ang inyong lingkod-bayan
+              </span>
+              <h2 className="text-3xl font-extrabold text-zinc-900 mt-1">
+                Officials of Barangay Balibago
+              </h2>
+              <p className="text-xs text-zinc-500 font-mono mt-1">
+                Sangguniang Barangay 2023–2026 Term · Verified DILG Roster
+              </p>
+            </div>
+            <Link to="/dashboard/puroks" className="text-xs font-mono font-bold text-zinc-900 hover:underline flex items-center gap-1">
+              View full directory →
+            </Link>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs">
-                P
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900">Hon. Joseph "PG" Ponce</h3>
-                <p className="text-xs font-mono text-zinc-500">Punong Barangay</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
+            {BARANGAY_OFFICIALS.slice(0, 8).map((o) => (
+              <div key={o.name} className="surface-card p-4 border border-zinc-200 bg-white rounded-3xl space-y-2.5 shadow-sm hover:border-zinc-300 transition-all">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-zinc-900 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                    {o.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-xs font-bold text-zinc-900 truncate font-sans">{o.name}</h3>
+                    <p className="text-[11px] text-amber-700 font-bold">{o.title}</p>
+                  </div>
+                </div>
+                <p className="text-[10px] text-zinc-500 border-t border-zinc-100 pt-2 truncate">{o.role}</p>
               </div>
-            </div>
-
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs">
-                C
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900">Hon. Maria Cruz</h3>
-                <p className="text-xs font-mono text-zinc-500">Kagawad — Peace & Order</p>
-              </div>
-            </div>
-
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs">
-                S
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900">Hon. Ramon Santos</h3>
-                <p className="text-xs font-mono text-zinc-500">Kagawad — Health</p>
-              </div>
-            </div>
-
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs">
-                M
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900">Hon. Liza Mendoza</h3>
-                <p className="text-xs font-mono text-zinc-500">Kagawad — Infrastructure</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -532,58 +531,41 @@ function Landing() {
       {/* SECTION 5: § 05 · SERBISYO */}
       <section id="services" className="py-16 sm:py-24 border-b border-zinc-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <div>
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-              § 05 · Serbisyo
-            </span>
-            <h2 className="text-3xl font-extrabold text-zinc-900 mt-1">
-              Public services & documents
-            </h2>
-            <p className="text-xs text-zinc-500 font-mono mt-1">
-              Request common barangay documents online. Pickup at the hall or e-delivery.
-            </p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
+                § 05 · Serbisyo
+              </span>
+              <h2 className="text-3xl font-extrabold text-zinc-900 mt-1">
+                Public services & clearances
+              </h2>
+              <p className="text-xs text-zinc-500 font-mono mt-1">
+                Apply for official municipal documents online with PDF claim slips.
+              </p>
+            </div>
+            <Link to="/dashboard/services" className="text-xs font-mono font-bold text-zinc-900 hover:underline flex items-center gap-1">
+              Browse all documents →
+            </Link>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
-            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-3xl space-y-3 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900 font-sans">Barangay Clearance</h3>
-                <p className="text-zinc-500 text-xs mt-1">Same day turnaround</p>
+            {SERVICES.map((s) => (
+              <div key={s.id} className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-3xl space-y-4 flex flex-col justify-between shadow-sm hover:border-zinc-300 transition-all">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                      {s.time}
+                    </span>
+                    <span className="font-bold text-zinc-900 text-xs">{s.fee}</span>
+                  </div>
+                  <h3 className="text-sm font-bold text-zinc-900 font-sans leading-snug">{s.name}</h3>
+                  <p className="text-[11px] text-zinc-500 font-mono truncate">{s.group} · {s.requirements.length} requirement(s)</p>
+                </div>
+                <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs">
+                  <Link to="/dashboard/services">Apply Online ↗</Link>
+                </Button>
               </div>
-              <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 text-white text-xs">
-                <Link to="/dashboard/services">Apply Online</Link>
-              </Button>
-            </div>
-
-            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-3xl space-y-3 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900 font-sans">Certificate of Indigency</h3>
-                <p className="text-zinc-500 text-xs mt-1">Same day turnaround</p>
-              </div>
-              <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 text-white text-xs">
-                <Link to="/dashboard/services">Apply Online</Link>
-              </Button>
-            </div>
-
-            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-3xl space-y-3 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900 font-sans">Business Permit Endorsement</h3>
-                <p className="text-zinc-500 text-xs mt-1">2 days turnaround</p>
-              </div>
-              <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 text-white text-xs">
-                <Link to="/dashboard/services">Apply Online</Link>
-              </Button>
-            </div>
-
-            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-3xl space-y-3 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900 font-sans">Residency Certification</h3>
-                <p className="text-zinc-500 text-xs mt-1">Same day turnaround</p>
-              </div>
-              <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 text-white text-xs">
-                <Link to="/dashboard/services">Apply Online</Link>
-              </Button>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -606,72 +588,169 @@ function Landing() {
           </div>
 
           <div className="grid gap-5 sm:grid-cols-3">
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-2 shadow-sm">
-              <span className="text-[11px] font-mono font-bold text-zinc-500 uppercase">TUE / THU / SAT</span>
-              <h3 className="text-base font-bold text-zinc-900">Garbage collection</h3>
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full uppercase">
+                  TUE / THU / SAT
+                </span>
+                <Trash2 className="h-4 w-4 text-emerald-600" />
+              </div>
+              <h3 className="text-base font-bold text-zinc-900">Garbage Collection</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
-                Biodegradable, non-bio, recyclables — 5:30 AM start.
+                Segregated waste pickup (biodegradable, non-bio, recyclables) across all 8 Puroks starting at 5:30 AM.
               </p>
             </div>
 
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-2 shadow-sm">
-              <span className="text-[11px] font-mono font-bold text-zinc-500 uppercase">WED · 09:00–12:00</span>
-              <h3 className="text-base font-bold text-zinc-900">Brownout, Puroks 3–5</h3>
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full uppercase">
+                  WED · 09:00–12:00
+                </span>
+                <Zap className="h-4 w-4 text-amber-600" />
+              </div>
+              <h3 className="text-base font-bold text-zinc-900">Meralco Line Maintenance</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
-                Meralco line maintenance. Prepare for outage.
+                Feeder line rehabilitation along Puroks 3, 4, & 5. Charge devices and backup batteries in advance.
               </p>
             </div>
 
-            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-2 shadow-sm">
-              <span className="text-[11px] font-mono font-bold text-zinc-500 uppercase">SAT · 07:00</span>
-              <h3 className="text-base font-bold text-zinc-900">Free medical mission</h3>
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono font-bold text-sky-800 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full uppercase">
+                  SAT · 07:00 AM
+                </span>
+                <HeartPulse className="h-4 w-4 text-sky-600" />
+              </div>
+              <h3 className="text-base font-bold text-zinc-900">Community Health Mission</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
-                Covered court. Consultations + free maintenance meds.
+                Balibago Covered Court. Free medical consults, blood pressure screening, and maintenance medicine distribution.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 7: § 07 · EMERGENCY */}
+      {/* SECTION 7: § 07 · EMERGENCY RESPONSE COMMAND CENTER (High Priority Callout UI) */}
       <section id="emergency" className="py-16 sm:py-24 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <div>
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-rose-600">
-              § 07 · Emergency
-            </span>
-            <h2 className="text-3xl font-extrabold text-zinc-900 mt-1">
-              May emergency? Dial the hotline first.
-            </h2>
-            <p className="text-xs text-zinc-500 font-mono mt-1 max-w-xl">
-              File the concern here for record and follow-up — but for life-safety incidents, call the barangay tanod directly.
-            </p>
+          {/* Urgent Emergency Callout Header Banner */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950 via-zinc-900 to-rose-950 p-6 sm:p-10 text-white shadow-2xl border border-rose-800/60">
+            <div className="absolute top-0 right-0 -translate-y-4 translate-x-4 opacity-10 pointer-events-none">
+              <Siren className="h-72 w-72 text-rose-500" />
+            </div>
+
+            <div className="relative z-10 space-y-4 max-w-3xl">
+              <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/20 px-3.5 py-1 text-xs font-mono font-bold text-rose-400 border border-rose-500/30 uppercase tracking-wider">
+                <Siren className="h-3.5 w-3.5 text-rose-400 animate-pulse" /> 24/7 Life Safety & Dispatch Hotline
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                May emergency? Dial the hotline first.
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-300 font-sans leading-relaxed">
+                For life-safety incidents, fires, medical emergencies, or crime in progress, call local emergency responders directly before filing a web ticket.
+              </p>
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <a
+                  href="tel:09990990638"
+                  className="inline-flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-mono font-bold text-xs px-5 py-2.5 shadow-lg transition-all"
+                >
+                  <PhoneCall className="h-4 w-4" /> Call Barangay Hotline: 0999-099-0638
+                </a>
+                <a
+                  href="tel:911"
+                  className="inline-flex items-center gap-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 font-mono font-bold text-xs px-5 py-2.5 shadow-md transition-all"
+                >
+                  <Siren className="h-4 w-4 text-rose-600" /> Dial 911 (National Emergency)
+                </a>
+              </div>
+            </div>
           </div>
 
+          {/* 1-Tap Emergency Contact Card Grid */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 font-mono text-xs">
-            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50 rounded-2xl space-y-1">
-              <p className="font-bold text-zinc-900">24/7 barangay hotline</p>
-              <p className="text-zinc-700 font-bold text-sm">+63 916-741-4383</p>
+            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50/80 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
+                  24/7 Command Desk
+                </span>
+                <p className="font-bold text-zinc-900 text-xs mt-2">Barangay Hotline</p>
+                <p className="text-zinc-700 font-bold text-sm mt-0.5">0999-099-0638</p>
+                <p className="text-[10px] text-zinc-500">0916-741-4383</p>
+              </div>
+              <a
+                href="tel:09990990638"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold py-1.5"
+              >
+                <PhoneCall className="h-3 w-3 text-rose-400" /> Call Hotline
+              </a>
             </div>
 
-            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50 rounded-2xl space-y-1">
-              <p className="font-bold text-zinc-900">Tanod dispatch</p>
-              <p className="text-zinc-700 font-bold text-sm">1631</p>
+            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50/80 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                  Balibago Substation
+                </span>
+                <p className="font-bold text-zinc-900 text-xs mt-2">Police Station 4</p>
+                <p className="text-zinc-700 font-bold text-sm mt-0.5">(045) 322-2146</p>
+                <p className="text-[10px] text-zinc-500">(045) 893-0931</p>
+              </div>
+              <a
+                href="tel:0453222146"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold py-1.5"
+              >
+                <PhoneCall className="h-3 w-3 text-amber-400" /> Call Police
+              </a>
             </div>
 
-            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50 rounded-2xl space-y-1">
-              <p className="font-bold text-zinc-900">Health center</p>
-              <p className="text-zinc-700 font-bold text-sm">0917-231-8842</p>
+            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50/80 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">
+                  Disaster Office
+                </span>
+                <p className="font-bold text-zinc-900 text-xs mt-2">ACDRRMO Rescue</p>
+                <p className="text-zinc-700 font-bold text-sm mt-0.5">0917-851-9581</p>
+                <p className="text-[10px] text-zinc-500">0998-842-7746</p>
+              </div>
+              <a
+                href="tel:09178519581"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold py-1.5"
+              >
+                <PhoneCall className="h-3 w-3 text-sky-400" /> Call ACDRRMO
+              </a>
             </div>
 
-            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50 rounded-2xl space-y-1">
-              <p className="font-bold text-zinc-900">Fire (BFP)</p>
-              <p className="text-zinc-700 font-bold text-sm">911</p>
+            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50/80 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">
+                  Fire Station
+                </span>
+                <p className="font-bold text-zinc-900 text-xs mt-2">BFP Angeles Fire</p>
+                <p className="text-zinc-700 font-bold text-sm mt-0.5">(045) 888-5899</p>
+                <p className="text-[10px] text-zinc-500">0995-822-3620</p>
+              </div>
+              <a
+                href="tel:0458885899"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold py-1.5"
+              >
+                <PhoneCall className="h-3 w-3 text-orange-400" /> Call BFP
+              </a>
             </div>
 
-            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50 rounded-2xl space-y-1">
-              <p className="font-bold text-zinc-900">Angeles PNP</p>
-              <p className="text-zinc-700 font-bold text-sm">117</p>
+            <div className="surface-card p-4 border border-zinc-200 bg-zinc-50/80 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  Health Facility
+                </span>
+                <p className="font-bold text-zinc-900 text-xs mt-2">Balibago Health Center</p>
+                <p className="text-zinc-700 font-bold text-sm mt-0.5">0917-231-8842</p>
+                <p className="text-[10px] text-zinc-500">1511 Rossana St.</p>
+              </div>
+              <a
+                href="tel:09172318842"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-semibold py-1.5"
+              >
+                <PhoneCall className="h-3 w-3 text-emerald-400" /> Call Health Desk
+              </a>
             </div>
           </div>
         </div>
