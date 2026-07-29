@@ -123,6 +123,7 @@ export function BarangayMap({
   const [showTraffic, setShowTraffic] = useState(false);
   const [showWeather, setShowWeather] = useState(true);
   const [boundsWarning, setBoundsWarning] = useState<string | null>(null);
+  const [showCtrlHint, setShowCtrlHint] = useState(false);
 
   // Live Weather State (Open-Meteo API for Balibago)
   const [weather, setWeather] = useState<WeatherData | null>({
@@ -147,6 +148,21 @@ export function BarangayMap({
       setCenter({ lat: mapCenter.lat, lng: mapCenter.lng });
     }
   }, [mapCenter?.lat, mapCenter?.lng]);
+
+  // Non-passive native wheel listener to reliably block browser page zoom when Ctrl is held over map
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onNativeWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+      }
+    };
+
+    el.addEventListener("wheel", onNativeWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onNativeWheel);
+  }, []);
 
   const isDragging = useRef(false);
   const dragStart = useRef<{ x: number; y: number } | null>(null);
@@ -227,10 +243,18 @@ export function BarangayMap({
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.deltaY < 0) {
-      setZoom((z) => Math.min(18, z + 1));
-    } else if (e.deltaY > 0) {
-      setZoom((z) => Math.max(12, z - 1));
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowCtrlHint(false);
+      if (e.deltaY < 0) {
+        setZoom((z) => Math.min(18, z + 1));
+      } else if (e.deltaY > 0) {
+        setZoom((z) => Math.max(12, z - 1));
+      }
+    } else {
+      setShowCtrlHint(true);
+      setTimeout(() => setShowCtrlHint(false), 2200);
     }
   };
 
@@ -262,11 +286,20 @@ export function BarangayMap({
         </div>
       )}
 
+      {/* Ctrl + Scroll Hint Overlay Banner */}
+      {showCtrlHint && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px] text-white text-sm font-semibold pointer-events-none transition-opacity">
+          <div className="bg-zinc-900/95 px-5 py-2.5 rounded-full border border-white/20 shadow-xl font-mono text-xs flex items-center gap-2">
+            <span>Use <strong>Ctrl + scroll</strong> to zoom the map</span>
+          </div>
+        </div>
+      )}
+
       {/* Layer & Zoom Controls in Top Right */}
       <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-zinc-200 shadow-sm pointer-events-auto">
         {onPick && (
           <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-700 px-2.5 py-0.5 bg-zinc-100 rounded-full mr-1">
-            <Crosshair className="h-3.5 w-3.5 text-zinc-900" /> Scroll to zoom · Click to pick
+            <Crosshair className="h-3.5 w-3.5 text-zinc-900" /> Ctrl + scroll to zoom · Click to pick
           </span>
         )}
 
