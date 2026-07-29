@@ -9,6 +9,7 @@ import { StatusPill } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import bgImage from "@/assets/bg.jpg";
+import balibagoImg from "@/assets/balibago.jpg";
 import {
   Map,
   ShieldCheck,
@@ -186,9 +187,8 @@ function Landing() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Hero Left Column */}
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1.5 text-xs font-mono font-semibold text-zinc-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                Barangay Balibago · {mounted ? issues.filter((i) => i.status !== "Resident Verified").length : 5} issues open right now
+              <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
+                Serbisyo Publiko · Est. 1961
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
@@ -229,7 +229,7 @@ function Landing() {
             <div className="surface-card overflow-hidden border border-zinc-200 bg-white rounded-3xl shadow-lg relative h-[380px] sm:h-[430px] flex flex-col justify-end">
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
-                style={{ backgroundImage: `url(${bgImage})` }}
+                style={{ backgroundImage: `url(${balibagoImg})` }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent" />
 
