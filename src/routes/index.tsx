@@ -192,11 +192,11 @@ function Landing() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
-                Nothing closes until <span className="underline underline-offset-8 decoration-zinc-900">you</span> say it's fixed.
+                Walang magsasara ng ulat hangga't hindi <span className="underline underline-offset-8 decoration-zinc-900">ninyo</span> sinasabing maayos na.
               </h1>
 
               <p className="text-base text-zinc-600 leading-relaxed max-w-xl">
-                Say it the way you'd tell a neighbour — <em>"baha na naman sa Fields Ave."</em> It lands on the live Balibago map, your street confirms it, and crews cannot mark it done without 5 resident votes.
+                Ipaabot mo sa barangay gaya ng pakikipag-usap sa kapitbahay — <em>"Mayapad ne naman ing baha sa Fields Ave, paki-aksyunan!"</em> Diretso itong lalabas sa live Balibago map, ikokumpirma ng mga kapwa natin residente, at hindi pwedeng i-close ng crew nang walang 5 resident confirmation votes.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
