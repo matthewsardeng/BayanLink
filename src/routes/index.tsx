@@ -102,7 +102,7 @@ function Landing() {
       <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-3 shrink-0">
-            <img src={logoImg} alt="Tugnay Logo" className="h-12 sm:h-14 w-auto object-contain shrink-0" />
+            <img src={logoImg} alt="Tugnay Logo" className="h-11 sm:h-12 w-11 sm:w-12 rounded-full bg-white p-1 border border-zinc-200 shadow-sm object-contain shrink-0" />
             <div className="hidden min-[380px]:block">
               <span className="block font-display text-lg font-bold tracking-tight text-zinc-900 leading-none">
                 Tugnay
