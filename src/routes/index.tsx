@@ -4,7 +4,7 @@ import { BARANGAY_INFO } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { BarangayMap } from "@/components/barangay-map";
 import {
-  ArrowRight,
+  ArrowUpRight,
   ShieldCheck,
   PhoneCall,
   Building2,
@@ -13,7 +13,6 @@ import {
   FileText,
   CheckCircle2,
   MapPin,
-  Clock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -40,275 +39,217 @@ function Landing() {
   const { issues } = useBayanStore();
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      {/* Barangay Balibago Top Header */}
-      <div className="border-b border-border bg-slate-900 px-4 py-2 text-xs font-medium text-slate-200">
-        <div className="mx-auto flex max-w-[1300px] flex-wrap items-center justify-between gap-2">
+    <div className="min-h-screen bg-[#fafafa] font-sans text-[#18181b]">
+      {/* Top Banner */}
+      <div className="border-b border-zinc-200/80 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
             <span>
-              <strong className="text-white">{BARANGAY_INFO.name}</strong>, {BARANGAY_INFO.city}, {BARANGAY_INFO.province}{" "}
-              · {BARANGAY_INFO.captainTitle}: {BARANGAY_INFO.captain}
+              <strong className="text-white">{BARANGAY_INFO.name}</strong>, {BARANGAY_INFO.city}, {BARANGAY_INFO.province}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-4 font-mono text-[11px]">
-            <span className="text-slate-400">Audit Date: {BARANGAY_INFO.lastAuditDate}</span>
-            <a
-              href={`tel:${BARANGAY_INFO.hotlineMobile}`}
-              className="inline-flex items-center gap-1 font-semibold text-sky-400 hover:text-sky-300"
-            >
-              <PhoneCall className="h-3 w-3" /> Hotline: {BARANGAY_INFO.hotlineMobile}
+          <div className="flex items-center gap-4 font-mono text-[11px]">
+            <span>Audit: {BARANGAY_INFO.lastAuditDate}</span>
+            <a href={`tel:${BARANGAY_INFO.hotlineMobile}`} className="text-sky-400 font-semibold hover:underline">
+              Hotline: {BARANGAY_INFO.hotlineMobile}
             </a>
           </div>
         </div>
       </div>
 
-      {/* Primary Navigation */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-[1300px] items-center justify-between px-4 sm:px-6">
+      {/* Header Bar */}
+      <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-[#fafafa]/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-sky-600 text-white font-bold shadow-sm">
-              <Building2 className="h-5 w-5" />
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-zinc-900 text-white font-bold text-sm">
+              B
             </span>
-            <div className="flex flex-col">
-              <span className="font-display text-lg font-bold leading-tight tracking-tight text-slate-900">
-                BayanLink Balibago
-              </span>
-              <span className="text-[11px] text-slate-500 font-mono">
-                Angeles City · Region III
-              </span>
-            </div>
+            <span className="font-display text-lg font-bold tracking-tight text-zinc-900">
+              BayanLink
+            </span>
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a href="#live-map" className="transition-colors hover:text-slate-900">
-              Interactive Map
+          <nav className="hidden items-center gap-8 text-sm font-medium text-zinc-600 md:flex">
+            <a href="#live-map" className="transition-colors hover:text-zinc-900">
+              Issue Map
             </a>
-            <a href="#verification" className="transition-colors hover:text-slate-900">
-              Resident Verification
+            <a href="#verification" className="transition-colors hover:text-zinc-900">
+              Verification
             </a>
-            <a href="#directory" className="transition-colors hover:text-slate-900">
-              Emergency Hotlines
+            <a href="#directory" className="transition-colors hover:text-zinc-900">
+              Hotlines
             </a>
           </nav>
 
-          <div className="flex items-center gap-2.5">
-            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex font-semibold">
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full text-xs font-semibold">
               <Link to="/dashboard">Operations Desk</Link>
             </Button>
-            <Button asChild size="sm" className="font-semibold bg-sky-600 hover:bg-sky-500 text-white">
-              <Link to="/report">File a Concern</Link>
+            <Button asChild size="sm" className="rounded-full text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white px-4">
+              <Link to="/report">File a concern</Link>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="border-b border-border bg-slate-50/60 py-12 sm:py-16">
-        <div className="mx-auto grid w-full max-w-[1300px] items-center gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 mb-4">
-              Barangay Balibago Public Operations Desk
-            </div>
-            <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl tracking-tight text-slate-900">
-              Report & Track Community Concerns in Balibago
-            </h1>
-            <p className="mt-4 text-base text-slate-600 leading-relaxed sm:text-lg">
-              Submit municipal concerns directly to{" "}
-              <strong className="text-slate-900">Barangay Balibago</strong> — from drainage blockages on Fields Avenue to streetlights in Sta. Maria Village. Track repair progress on the interactive map.
-            </p>
-
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg" className="gap-2 font-semibold bg-sky-600 hover:bg-sky-500 text-white">
-                <Link to="/report">
-                  File a Concern <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="font-semibold">
-                <Link to="/dashboard/map">Open Issue Map</Link>
-              </Button>
-            </div>
-
-            {/* Quick Metrics */}
-            <div className="mt-8 grid grid-cols-3 gap-3 border-t border-slate-200 pt-5 font-mono text-xs">
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <dt className="text-2xl font-bold text-slate-900">{issues.length}</dt>
-                <dd className="text-[11px] text-slate-500 mt-0.5">Active Reports</dd>
-              </div>
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <dt className="text-2xl font-bold text-slate-900">8</dt>
-                <dd className="text-[11px] text-slate-500 mt-0.5">Covered Puroks</dd>
-              </div>
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <dt className="text-2xl font-bold text-emerald-600">100%</dt>
-                <dd className="text-[11px] text-slate-500 mt-0.5">Verified Protocol</dd>
-              </div>
-            </div>
+      {/* Hero Section - MolKit Inspired Minimalist Design */}
+      <section className="pt-16 pb-14 text-center px-4 sm:px-6">
+        <div className="mx-auto max-w-3xl">
+          <div className="flex justify-center mb-4">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-100 text-zinc-900 font-bold border border-zinc-200">
+              <Building2 className="h-5 w-5" />
+            </span>
           </div>
 
-          {/* Interactive Map Preview */}
-          <div
-            id="live-map"
-            className="surface-card p-4 border border-slate-200 shadow-md rounded-2xl bg-white"
-          >
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-zinc-900 leading-[1.1]">
+            Civic reports, tracking, and public services.
+          </h1>
+
+          <p className="mt-4 text-base text-zinc-600 sm:text-lg max-w-xl mx-auto font-normal">
+            A simple, transparent portal for Barangay Balibago, Angeles City. Report concerns, track resolution progress, and access municipal services.
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Button asChild size="lg" className="rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white px-6">
+              <Link to="/report">
+                File a concern <ArrowUpRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="rounded-full font-semibold border-zinc-300 text-zinc-800 px-6">
+              <Link to="/dashboard/map">Explore map</Link>
+            </Button>
+          </div>
+
+          {/* Minimal Stat Pills */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-zinc-600 border-t border-zinc-200 pt-8">
+            <span className="bg-white px-4 py-2 rounded-full border border-zinc-200">
+              <strong className="text-zinc-900">{issues.length}</strong> Active Reports
+            </span>
+            <span className="bg-white px-4 py-2 rounded-full border border-zinc-200">
+              <strong className="text-zinc-900">8</strong> Covered Puroks
+            </span>
+            <span className="bg-white px-4 py-2 rounded-full border border-zinc-200">
+              <strong className="text-emerald-700">100%</strong> Resident Verified
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Clean Embedded Map Container */}
+      <section id="live-map" className="py-10 px-4 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="surface-card p-4 border border-zinc-200 rounded-3xl bg-white">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
               <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <span className="font-mono text-xs font-bold text-slate-900">
-                  Barangay Balibago Issue Map
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span className="text-xs font-bold text-zinc-900">
+                  Barangay Balibago Schematic Map
                 </span>
               </div>
-              <span className="text-[11px] font-mono text-slate-500">OpenStreetMap</span>
+              <span className="text-xs text-zinc-500 font-mono">Angeles City</span>
             </div>
 
-            <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
-              <BarangayMap issues={issues} compact={false} className="h-[320px] sm:h-[360px]" />
+            <div className="mt-3 overflow-hidden rounded-2xl border border-zinc-200">
+              <BarangayMap issues={issues} compact={false} className="h-[340px] sm:h-[400px]" />
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-mono flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5 text-sky-600" /> MacArthur Hwy & Fields Ave District
+            <div className="mt-3 flex items-center justify-between text-xs text-zinc-600">
+              <span className="flex items-center gap-1 font-mono">
+                <MapPin className="h-3.5 w-3.5 text-zinc-900" /> MacArthur Hwy & Fields Ave Corridor
               </span>
-              <Link
-                to="/dashboard/map"
-                className="font-semibold text-sky-600 hover:underline flex items-center gap-1"
-              >
-                Expand Full Map <ArrowRight className="h-3.5 w-3.5" />
+              <Link to="/dashboard/map" className="font-semibold text-zinc-900 hover:underline flex items-center gap-0.5">
+                Full map view <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Verification Protocol Section */}
-      <section id="verification" className="py-14 sm:py-20 border-b border-border bg-white">
-        <div className="mx-auto w-full max-w-[1300px] px-4 sm:px-6">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold sm:text-3xl tracking-tight text-slate-900">
+      {/* Verification Section */}
+      <section id="verification" className="py-16 px-4 sm:px-6 border-t border-zinc-200 bg-white">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center max-w-xl mx-auto">
+            <h2 className="text-2xl font-bold sm:text-3xl tracking-tight text-zinc-900">
               Resident Resolution Verification
             </h2>
-            <p className="mt-2 text-sm text-slate-600 sm:text-base">
-              Reports submitted to Barangay Balibago require local resident confirmation before being marked fully resolved.
+            <p className="mt-2 text-sm text-zinc-600">
+              Public reports require confirmation by local residents before ticket resolution is finalized.
             </p>
           </div>
 
-          <div className="mt-8 grid gap-5 lg:grid-cols-3">
-            <div className="surface-card p-6 lg:col-span-2 border border-slate-200 bg-slate-50">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-600 text-white font-bold">
-                  <ShieldCheck className="h-5 w-5" />
-                </span>
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">Community Resolution Protocol</h3>
-                  <p className="text-xs text-slate-500 font-mono">
-                    Barangay Balibago Transparency Protocol
-                  </p>
-                </div>
-              </div>
-              <p className="mt-4 text-sm text-slate-700 leading-relaxed">
-                When maintenance work is completed by barangay staff or city engineers, nearby residents in that purok receive confirmation prompts. A ticket is permanently closed only when local residents confirm the physical repair.
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-2xl">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs mb-3">
+                1
+              </span>
+              <h3 className="text-sm font-bold text-zinc-900">Public Report Intake</h3>
+              <p className="text-xs text-zinc-600 mt-1 leading-relaxed">
+                Residents log municipal issues with photo evidence and optional anonymous tracking codes.
               </p>
-              <div className="mt-5 flex flex-wrap gap-2 text-xs font-mono">
-                <span className="rounded-lg bg-white border border-slate-200 px-3 py-1.5 font-semibold text-slate-800 shadow-sm flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Photo Proof Required
-                </span>
-                <span className="rounded-lg bg-white border border-slate-200 px-3 py-1.5 font-semibold text-slate-800 shadow-sm flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Resident Confirmation Vote
-                </span>
-                <span className="rounded-lg bg-white border border-slate-200 px-3 py-1.5 font-semibold text-slate-800 shadow-sm flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Re-open if Unresolved
-                </span>
-              </div>
             </div>
 
-            <div className="surface-card p-6 border border-slate-200 flex flex-col justify-between bg-white">
-              <div>
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-slate-100 text-slate-800 border border-slate-200">
-                  <FileText className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 text-base font-bold text-slate-900">Submit a Concern</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Have a road defect, unlit lamp, or water issue in your neighborhood?
-                </p>
-              </div>
-              <Button asChild className="mt-6 font-semibold bg-sky-600 hover:bg-sky-500 text-white">
-                <Link to="/report">File a Concern Now</Link>
-              </Button>
+            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-2xl">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs mb-3">
+                2
+              </span>
+              <h3 className="text-sm font-bold text-zinc-900">Inspector Dispatch</h3>
+              <p className="text-xs text-zinc-600 mt-1 leading-relaxed">
+                Barangay engineering and public works crews are assigned to physical repair sites.
+              </p>
+            </div>
+
+            <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-2xl">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-emerald-600 text-white font-bold text-xs mb-3">
+                3
+              </span>
+              <h3 className="text-sm font-bold text-zinc-900">Resident Confirmation</h3>
+              <p className="text-xs text-zinc-600 mt-1 leading-relaxed">
+                Purok residents vote to verify the physical resolution before the ticket is closed.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Emergency Hotline Directory */}
-      <section id="directory" className="py-14 sm:py-20 bg-slate-50/50">
-        <div className="mx-auto w-full max-w-[1300px] px-4 sm:px-6">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold sm:text-3xl tracking-tight text-slate-900">
-              Emergency Contact Directory
+      {/* Emergency Directory */}
+      <section id="directory" className="py-16 px-4 sm:px-6 bg-[#fafafa]">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center max-w-xl mx-auto mb-10">
+            <h2 className="text-2xl font-bold sm:text-3xl tracking-tight text-zinc-900">
+              Emergency Hotlines
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Direct hotlines for Barangay Balibago dispatch, police station, and disaster management.
+            <p className="mt-2 text-sm text-zinc-600">
+              Direct emergency contact numbers for Barangay Balibago.
             </p>
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="surface-card p-5 border border-slate-200 bg-white">
-              <div className="flex items-center gap-2 text-sky-700 font-semibold text-sm">
-                <Building2 className="h-4 w-4" /> Barangay Hall Desk
-              </div>
-              <p className="mt-2 text-xs font-mono text-slate-500">
-                {BARANGAY_INFO.address}
-              </p>
-              <a
-                href={`tel:${BARANGAY_INFO.hotlineLandline.split("/")[0].trim()}`}
-                className="mt-3 block font-mono text-sm font-bold text-slate-900 hover:text-sky-600"
-              >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-2xl">
+              <p className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">Barangay Hall</p>
+              <a href={`tel:${BARANGAY_INFO.hotlineLandline.split("/")[0].trim()}`} className="mt-2 block font-mono text-sm font-bold text-zinc-900 hover:underline">
                 {BARANGAY_INFO.hotlineLandline}
               </a>
             </div>
 
-            <div className="surface-card p-5 border border-slate-200 bg-white">
-              <div className="flex items-center gap-2 text-blue-700 font-semibold text-sm">
-                <Shield className="h-4 w-4" /> Police Station 4 (Balibago)
-              </div>
-              <p className="mt-2 text-xs text-slate-500 font-mono">
-                Balibago Police Substation
-              </p>
-              <a
-                href="tel:0458930931"
-                className="mt-3 block font-mono text-sm font-bold text-slate-900 hover:text-blue-600"
-              >
-                (045) 893-0931 / (045) 322-2146
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-2xl">
+              <p className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">Police Substation 4</p>
+              <a href="tel:0458930931" className="mt-2 block font-mono text-sm font-bold text-zinc-900 hover:underline">
+                (045) 893-0931
               </a>
             </div>
 
-            <div className="surface-card p-5 border border-slate-200 bg-white">
-              <div className="flex items-center gap-2 text-rose-700 font-semibold text-sm">
-                <Flame className="h-4 w-4" /> BFP Balibago Substation
-              </div>
-              <p className="mt-2 text-xs text-slate-500 font-mono">
-                BFP Angeles City Fire Station
-              </p>
-              <a
-                href="tel:0453220671"
-                className="mt-3 block font-mono text-sm font-bold text-slate-900 hover:text-rose-600"
-              >
-                (045) 322-0671 / 0995-822-3620
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-2xl">
+              <p className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">Fire Substation</p>
+              <a href="tel:0453220671" className="mt-2 block font-mono text-sm font-bold text-zinc-900 hover:underline">
+                (045) 322-0671
               </a>
             </div>
 
-            <div className="surface-card p-5 border border-slate-200 bg-white">
-              <div className="flex items-center gap-2 text-amber-700 font-semibold text-sm">
-                <PhoneCall className="h-4 w-4" /> Angeles City DRRMO
-              </div>
-              <p className="mt-2 text-xs text-slate-500 font-mono">
-                Disaster Risk Reduction Office
-              </p>
-              <a
-                href="tel:09178519581"
-                className="mt-3 block font-mono text-sm font-bold text-slate-900 hover:text-amber-600"
-              >
-                0917-851-9581 / 0998-842-7746
+            <div className="surface-card p-5 border border-zinc-200 bg-white rounded-2xl">
+              <p className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">ACDRRMO Disaster</p>
+              <a href="tel:09178519581" className="mt-2 block font-mono text-sm font-bold text-zinc-900 hover:underline">
+                0917-851-9581
               </a>
             </div>
           </div>

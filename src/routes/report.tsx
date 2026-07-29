@@ -12,17 +12,13 @@ import { Switch } from "@/components/ui/switch";
 import { StatusPill } from "@/components/status";
 import {
   ArrowLeft,
-  Siren,
   ShieldCheck,
   PhoneCall,
   UploadCloud,
   X,
   CheckCircle2,
   Building2,
-  FileCheck2,
   MapPin,
-  Globe,
-  Sparkles,
 } from "lucide-react";
 
 export const Route = createFileRoute("/report")({
@@ -32,13 +28,13 @@ export const Route = createFileRoute("/report")({
       {
         name: "description",
         content:
-          "Report a community issue in Barangay Balibago, Angeles City. Pin-point location on OpenStreetMap, upload photo proof, and track resolution.",
+          "Report a community issue in Barangay Balibago, Angeles City. Pinpoint location on map, upload photo proof, and track resolution.",
       },
       { property: "og:title", content: "Report an Issue — BayanLink Balibago" },
       {
         property: "og:description",
         content:
-          "Civic reporting for Barangay Balibago with automated category detection, map pin-pointing, and resident verification.",
+          "Civic reporting for Barangay Balibago with automated category routing and resident verification.",
       },
     ],
   }),
@@ -72,7 +68,6 @@ function Report() {
 
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [pickedCoords, setPickedCoords] = useState<{ lat: number; lng: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -95,11 +90,10 @@ function Report() {
 
   const text = watch("summary") || "";
   const selectedPurok = watch("purok");
-  const streetAddress = watch("street");
   const anon = watch("anonymous");
 
   const urgent = /wire|sunog|fire|kuryente|baha|flood|aksidente|accident|kriminal|sakuna/i.test(
-    text,
+    text
   );
   const detectedCat = text.trim().length > 3 ? detectCategory(text) : "Safety Hazard";
   const near = issues.slice(0, 2);
@@ -116,7 +110,7 @@ function Report() {
 
   const handlePickLocation = (lat: number, lng: number) => {
     setPickedCoords({ lat, lng });
-    const formatted = `GPS: ${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E near ${selectedPurok}`;
+    const formatted = `Point near ${selectedPurok} (${lat.toFixed(4)}°, ${lng.toFixed(4)}°)`;
     setValue("street", formatted);
   };
 
@@ -135,66 +129,50 @@ function Report() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground bg-mesh-light selection:bg-brand selection:text-white">
-      {/* Top Banner */}
-      <div className="border-b border-border bg-slate-900 px-4 py-2 text-xs font-medium text-slate-200">
-        <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-2">
-          <span>
-            Official Public Report Console for <strong className="text-white">{BARANGAY_INFO.name}</strong>,{" "}
-            {BARANGAY_INFO.city}, {BARANGAY_INFO.province}
-          </span>
-          <span className="font-mono text-[11px] text-slate-400">
-            {BARANGAY_INFO.lastAuditDate}
-          </span>
-        </div>
-      </div>
-
-      <div className="mx-auto w-full max-w-[1100px] px-4 py-8 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-[#fafafa] text-zinc-900 font-sans">
+      <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 hover:text-sky-500 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-900"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Balibago Operations Home
+          <ArrowLeft className="h-4 w-4" /> Back to Home
         </Link>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-extrabold sm:text-3xl tracking-tight text-foreground flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-sky-500" /> {t.reportTitle}
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900">
+              {t.reportTitle}
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">{t.reportSubtitle}</p>
+            <p className="mt-1 text-sm text-zinc-600">{t.reportSubtitle}</p>
           </div>
 
           <Button
             type="button"
             variant="outline"
             onClick={() => setShowMapPicker(!showMapPicker)}
-            className="rounded-xl gap-2 font-semibold border-sky-500/30 text-sky-600 hover:bg-sky-500/10"
+            className="rounded-full text-xs font-semibold border-zinc-300"
           >
-            <Globe className="h-4 w-4 text-sky-500" />
-            {showMapPicker ? "Hide Map Picker" : "📍 Interactive Map Location Picker"}
+            <MapPin className="h-3.5 w-3.5 mr-1" />
+            {showMapPicker ? "Hide Map Picker" : "Select Location on Map"}
           </Button>
         </div>
 
-        {/* Interactive Location Picker Map Collapsible */}
+        {/* Location Picker Map */}
         {showMapPicker && (
-          <div className="mt-6 surface-card p-4 border border-sky-500/30 bg-card rounded-2xl shadow-xl animate-in fade-in duration-300">
-            <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-sky-500" />
-                <span className="font-mono text-xs font-bold uppercase tracking-wide text-foreground">
-                  OpenStreetMap Pin-point Location Picker
-                </span>
-              </div>
-              <span className="text-xs text-emerald-600 font-semibold font-mono">
-                {pickedCoords ? `Selected: ${pickedCoords.lat.toFixed(4)}°, ${pickedCoords.lng.toFixed(4)}°` : "Click anywhere on map to drop pin"}
+          <div className="mt-6 surface-card p-4 border border-zinc-200 bg-white rounded-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-200 mb-3">
+              <span className="font-mono text-xs font-bold text-zinc-900">
+                Click map to select location point
+              </span>
+              <span className="text-xs text-zinc-500 font-mono">
+                {pickedCoords ? `${pickedCoords.lat.toFixed(4)}°, ${pickedCoords.lng.toFixed(4)}°` : "No point selected"}
               </span>
             </div>
             <BarangayMap
               issues={issues}
               onPick={handlePickLocation}
               pickedCoords={pickedCoords}
-              className="h-[320px] rounded-xl"
+              className="h-[300px]"
             />
           </div>
         )}
@@ -202,19 +180,19 @@ function Report() {
         <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="surface-card p-5 sm:p-7 space-y-5 border border-border bg-card rounded-3xl shadow-xl"
+            className="surface-card p-6 space-y-5 border border-zinc-200 bg-white rounded-3xl"
           >
             <div>
               <label
                 htmlFor="zone-select"
-                className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5"
+                className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5"
               >
                 {t.zoneLabel}
               </label>
               <select
                 id="zone-select"
                 {...register("purok")}
-                className="w-full rounded-xl border border-border bg-surface-2 p-3 text-sm font-medium outline-none focus:ring-2 focus:ring-ring text-foreground transition-all"
+                className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
               >
                 {PUROKS.map((p) => (
                   <option key={p} value={p}>
@@ -222,57 +200,48 @@ function Report() {
                   </option>
                 ))}
               </select>
-              {errors.purok && <p className="mt-1 text-xs text-danger">{errors.purok.message}</p>}
+              {errors.purok && <p className="mt-1 text-xs text-rose-600">{errors.purok.message}</p>}
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="street-input"
-                  className="block text-xs font-bold text-muted-foreground uppercase tracking-wider"
-                >
-                  Street Address / GPS Landmark
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowMapPicker(true)}
-                  className="text-[11px] font-bold text-sky-600 hover:underline flex items-center gap-1"
-                >
-                  <MapPin className="h-3 w-3" /> Select on Map
-                </button>
-              </div>
+              <label
+                htmlFor="street-input"
+                className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5"
+              >
+                Street Address / Landmark (Optional)
+              </label>
               <input
                 id="street-input"
                 type="text"
                 placeholder="e.g. Near Astro Park / Fields Ave cor. MacArthur"
                 {...register("street")}
-                className="w-full rounded-xl border border-border bg-surface-2 p-3 text-sm outline-none focus:ring-2 focus:ring-ring text-foreground transition-all"
+                className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
               />
             </div>
 
             <div>
               <label
                 htmlFor="issue-textarea"
-                className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5"
+                className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5"
               >
                 {t.describeIssueLabel}
               </label>
               <textarea
                 id="issue-textarea"
                 {...register("summary")}
-                rows={5}
+                rows={4}
                 maxLength={1000}
                 placeholder={t.describePlaceholder}
-                className="w-full resize-none rounded-xl border border-border bg-surface-2 p-3.5 text-sm outline-none focus:ring-2 focus:ring-ring text-foreground transition-all leading-relaxed"
+                className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900 leading-relaxed"
               />
               {errors.summary && (
-                <p className="mt-1 text-xs text-danger">{errors.summary.message}</p>
+                <p className="mt-1 text-xs text-rose-600">{errors.summary.message}</p>
               )}
             </div>
 
-            {/* Drag & Drop Photo Upload */}
+            {/* Photo Upload */}
             <div>
-              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
                 Photo Evidence (Optional)
               </label>
               <input
@@ -288,54 +257,31 @@ function Report() {
 
               {!photoPreview ? (
                 <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setIsDragging(true);
-                  }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setIsDragging(false);
-                    const file = e.dataTransfer.files?.[0];
-                    if (file) handleFileDrop(file);
-                  }}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-5 text-center cursor-pointer transition-all ${
-                    isDragging
-                      ? "border-sky-500 bg-sky-500/10"
-                      : "border-border hover:bg-surface-2"
-                  }`}
+                  className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 p-5 text-center cursor-pointer hover:bg-zinc-50 transition-colors"
                 >
-                  <UploadCloud className="h-7 w-7 text-sky-500 mb-1.5" />
-                  <p className="text-xs font-bold text-foreground">Click or drag & drop photo evidence</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Faces & license plates automatically protected
-                  </p>
+                  <UploadCloud className="h-6 w-6 text-zinc-400 mb-1" />
+                  <p className="text-xs font-semibold text-zinc-900">Click to upload photo evidence</p>
+                  <p className="text-[11px] text-zinc-500 mt-0.5">Faces and license plates automatically blurred</p>
                 </div>
               ) : (
-                <div className="relative rounded-2xl overflow-hidden border border-border max-w-[220px] shadow-md">
-                  <img
-                    src={photoPreview}
-                    alt="Evidence Preview"
-                    className="h-36 w-full object-cover"
-                  />
+                <div className="relative rounded-xl overflow-hidden border border-zinc-200 max-w-[200px]">
+                  <img src={photoPreview} alt="Preview" className="h-32 w-full object-cover" />
                   <button
                     type="button"
                     onClick={() => setPhotoPreview(null)}
-                    className="absolute top-2 right-2 rounded-full bg-slate-900/80 p-1.5 text-white hover:bg-slate-950 transition-colors"
+                    className="absolute top-1.5 right-1.5 rounded-full bg-zinc-900/80 p-1 text-white hover:bg-zinc-900"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               )}
             </div>
 
-            <label className="flex items-center justify-between gap-3 rounded-2xl border border-border p-3.5 bg-surface-2/40">
-              <span className="min-w-0 text-sm">
-                <span className="block font-bold">{t.reportAnonymous}</span>
-                <span className="block text-xs text-muted-foreground mt-0.5">
-                  You will receive an official tracking code to follow resolution progress.
-                </span>
+            <label className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 p-3.5 bg-zinc-50">
+              <span className="min-w-0 text-xs">
+                <span className="block font-bold text-zinc-900">{t.reportAnonymous}</span>
+                <span className="block text-zinc-500 mt-0.5">Receive a tracking code to check status</span>
               </span>
               <Switch checked={anon} onCheckedChange={(val) => setValue("anonymous", val)} />
             </label>
@@ -343,119 +289,85 @@ function Report() {
             <Button
               type="submit"
               size="lg"
-              className="w-full font-bold rounded-xl bg-sky-600 hover:bg-sky-500 shadow-lg shadow-sky-600/25"
+              className="w-full font-semibold rounded-full bg-zinc-900 hover:bg-zinc-800 text-white"
               disabled={isSubmitting || text.trim().length < 10}
             >
               {t.submitReport}
             </Button>
 
             {submittedCode && (
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-sm text-emerald-950 dark:text-emerald-100 space-y-3 animate-in fade-in duration-300">
-                <p className="font-bold flex items-center gap-2 text-base text-emerald-700 dark:text-emerald-400">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600" /> Ticket Logged & Dispatched
+              <div className="rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-xs text-emerald-900 space-y-2">
+                <p className="font-bold flex items-center gap-1.5 text-sm text-emerald-800">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Report Registered
                 </p>
-                <p className="text-xs text-muted-foreground font-mono">
-                  Official Ticket Code: <strong className="text-foreground text-sm">{submittedCode}</strong>
+                <p className="font-mono text-zinc-700">
+                  Tracking Code: <strong>{submittedCode}</strong>
                 </p>
-                <div className="flex gap-2.5 pt-1">
+                <div className="flex gap-2 pt-1">
                   <Button
                     size="sm"
-                    className="font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl"
+                    className="rounded-full text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white"
                     onClick={() => navigate({ to: "/dashboard/issues" })}
                   >
-                    Track Ticket Queue
+                    View in Queue
                   </Button>
-                  <Button size="sm" variant="outline" className="rounded-xl" onClick={() => setSubmittedCode(null)}>
-                    File Another Report
+                  <Button size="sm" variant="ghost" onClick={() => setSubmittedCode(null)}>
+                    Report Another
                   </Button>
                 </div>
               </div>
             )}
           </form>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {urgent && (
-              <section className="rounded-3xl border border-rose-500/40 bg-rose-500/10 p-5 shadow-lg">
-                <p className="flex items-center gap-2 text-sm font-extrabold text-rose-600">
-                  <Siren className="h-5 w-5 animate-bounce" /> Emergency Warning Detected
+              <section className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs">
+                <p className="font-bold text-rose-800 flex items-center gap-1.5">
+                  Emergency Notice Detected
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  For active fire, flood, or safety emergencies, call dispatch immediately:
+                <p className="text-rose-700 mt-1">
+                  For immediate fire, crime, or medical emergencies, call direct hotlines:
                 </p>
-                <ul className="mt-3 space-y-2 text-xs font-mono">
-                  <li className="flex items-center gap-2 font-bold text-foreground">
-                    <PhoneCall className="h-4 w-4 text-rose-600 shrink-0" />
-                    ACDRRMO Hotline: 0917-851-9581 / 0998-842-7746
-                  </li>
-                  <li className="flex items-center gap-2 font-bold text-foreground">
-                    <PhoneCall className="h-4 w-4 text-rose-600 shrink-0" />
-                    Police Station 4 Balibago: (045) 893-0931
-                  </li>
-                  <li className="flex items-center gap-2 font-bold text-foreground">
-                    <PhoneCall className="h-4 w-4 text-rose-600 shrink-0" />
-                    BFP Fire Substation: (045) 322-0671
-                  </li>
+                <ul className="mt-2 space-y-1 font-mono text-[11px] text-rose-800">
+                  <li>ACDRRMO: 0917-851-9581</li>
+                  <li>Police Substation 4: (045) 893-0931</li>
+                  <li>Fire Substation: (045) 322-0671</li>
                 </ul>
               </section>
             )}
 
-            <section className="surface-card p-5 border border-border bg-card rounded-3xl shadow-lg">
-              <p className="flex items-center gap-2 text-sm font-bold text-sky-600">
-                <FileCheck2 className="h-4.5 w-4.5" /> Automated Routing & Priority Matrix
+            <section className="surface-card p-4 border border-zinc-200 bg-white rounded-2xl">
+              <p className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
+                <Building2 className="h-4 w-4 text-zinc-900" /> Active Reports in {selectedPurok}
               </p>
-              <div className="mt-3.5 flex flex-wrap gap-2 text-[11px] font-mono">
-                {[
-                  ["Category", text ? detectedCat : "—"],
-                  ["Severity", text ? (urgent ? "Critical" : "Moderate") : "—"],
-                  ["Zone", selectedPurok],
-                  ["Routing", "Barangay Inspector Dispatch"],
-                ].map(([k, v]) => (
-                  <span
-                    key={k}
-                    className="rounded-xl border border-border bg-surface-2 px-3 py-1 font-semibold"
-                  >
-                    <span className="text-muted-foreground">{k}: </span>
-                    <strong className="font-bold text-foreground">{v}</strong>
-                  </span>
-                ))}
-              </div>
-            </section>
-
-            <section className="surface-card p-5 border border-border bg-card rounded-3xl shadow-lg">
-              <p className="flex items-center gap-2 text-sm font-bold text-foreground">
-                <Building2 className="h-4.5 w-4.5 text-sky-500" /> Active Reports in {selectedPurok}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Confirming an existing issue increases priority without creating duplicate tickets.
+              <p className="text-xs text-zinc-500 mt-1">
+                Confirming existing reports accelerates repair dispatch.
               </p>
               {near.length > 0 ? (
-                <ul className="mt-3.5 space-y-2.5">
+                <ul className="mt-3 space-y-2">
                   {near.map((i) => (
-                    <li key={i.id} className="rounded-2xl border border-border p-3.5 bg-surface-2/40 space-y-2">
-                      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm font-bold text-foreground">{i.title}</span>
-                          <span className="block text-[11px] text-muted-foreground font-mono mt-0.5">
-                            {i.purok} · {i.confirmations} confirmations
-                          </span>
-                        </span>
+                    <li key={i.id} className="rounded-xl border border-zinc-200 p-3 bg-zinc-50/50 space-y-1.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-xs font-semibold text-zinc-900">{i.title}</span>
                         <StatusPill status={i.status} />
                       </div>
+                      <p className="text-[11px] text-zinc-500 font-mono">
+                        {i.confirmations} resident confirmations
+                      </p>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="w-full text-xs font-semibold gap-1.5 border-border hover:bg-surface-2"
+                        className="w-full text-xs font-semibold rounded-full border-zinc-300"
                         onClick={() => confirmIssue(i.id)}
                       >
-                        <ShieldCheck className="h-4 w-4 text-emerald-500" /> Confirm Affected Resident (
-                        {i.confirmations})
+                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 mr-1" /> Confirm Issue ({i.confirmations})
                       </Button>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <div className="py-6 text-center text-xs text-muted-foreground">
-                  No nearby active reports logged in this zone yet.
+                <div className="py-4 text-center text-xs text-zinc-500">
+                  No active reports in this zone.
                 </div>
               )}
             </section>
