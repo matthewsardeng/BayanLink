@@ -1,3 +1,6 @@
+# Ignored directories
+barangay/
+
 # Environment & Secret Files
 .env
 .env.*
