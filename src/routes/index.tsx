@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import bgImage from "@/assets/bg.jpg";
 import balibagoImg from "@/assets/balibago.jpg";
+import logoImg from "@/assets/logo.png";
 import {
   Map,
   ShieldCheck,
@@ -101,9 +102,7 @@ function Landing() {
       <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5 shrink-0">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-900 text-white font-bold text-sm shadow-sm">
-              T
-            </span>
+            <img src={logoImg} alt="Tugnay Logo" className="h-9 w-9 rounded-xl object-contain bg-zinc-900 p-1 border border-zinc-200 shadow-sm" />
             <div className="hidden min-[380px]:block">
               <span className="block font-display text-base font-bold tracking-tight text-zinc-900 leading-none">
                 Tugnay

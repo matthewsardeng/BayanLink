@@ -77,21 +77,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BayanLink — Barangay Service & Issue Platform" },
+      { title: "Tugnay — Tugon at Ugnay · Barangay Balibago Portal" },
       {
         name: "description",
         content:
-          "Report barangay issues, track them on a live map, and see verified fixes — a transparent civic operating system.",
+          "Tugnay (Tugon at Ugnay): Official civic operations portal for Barangay Balibago, Angeles City. Live issue map, resident-verified fixes, public announcements, and online clearance applications.",
       },
-      { property: "og:title", content: "BayanLink — Barangay Service & Issue Platform" },
+      { property: "og:title", content: "Tugnay — Tugon at Ugnay · Barangay Balibago" },
       {
         property: "og:description",
         content:
-          "A live map, transparent timelines, and resident-verified fixes for your barangay.",
+          "Mabilis na tugon, matibay na ugnay sa bawat purok ng Barangay Balibago.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -104,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/logo.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,
