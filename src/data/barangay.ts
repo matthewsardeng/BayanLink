@@ -442,7 +442,7 @@ export const SERVICES: ServiceItem[] = [
     name: "Barangay Blotter & Dispute Mediation (Katarungang Pambarangay)",
     group: "Justice & Security",
     fee: "Free of Charge",
-    time: "Scheduled hearing within 3 days",
+    time: "3 Days Turnaround",
     requirements: ["Complainant Statement", "Valid Govt ID"],
     location: "Lupong Tagapamayapa Office, Barangay Hall Complex",
   },

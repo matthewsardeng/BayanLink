@@ -134,10 +134,14 @@ function Services() {
                 </span>
               </div>
               <h2 className="text-base font-bold text-zinc-900 leading-snug">{s.name}</h2>
-              <p className="text-xs font-mono font-semibold text-zinc-600 flex items-center gap-1.5 bg-zinc-50 p-2 rounded-xl border border-zinc-200">
-                <Clock className="h-3.5 w-3.5 text-zinc-900" /> {s.time} ·{" "}
-                <span className="text-zinc-900 font-bold">{s.fee}</span>
-              </p>
+              <div className="flex items-center justify-between font-mono text-xs bg-zinc-50 p-2.5 rounded-2xl border border-zinc-200 gap-2">
+                <span className="text-[11px] font-semibold text-zinc-700 flex items-center gap-1.5 min-w-0">
+                  <Clock className="h-3.5 w-3.5 text-zinc-900 shrink-0" /> {s.time}
+                </span>
+                <span className="font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] uppercase shrink-0">
+                  {s.fee}
+                </span>
+              </div>
               <div className="pt-1">
                 <p className="text-[11px] font-bold text-zinc-500 uppercase font-mono tracking-wider">
                   Requirements Checklist:

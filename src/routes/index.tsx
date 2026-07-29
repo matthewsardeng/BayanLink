@@ -186,7 +186,7 @@ function Landing() {
       </header>
 
       {/* SECTION 1: HERO SECTION */}
-      <section className="relative overflow-hidden border-b border-zinc-200 bg-white py-12 sm:py-20">
+      <section className="relative overflow-hidden border-b border-zinc-200 bg-white py-8 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Hero Left Column */}
@@ -229,8 +229,8 @@ function Landing() {
               </div>
             </div>
 
-            {/* Hero Right Column: Balibago Image with Live Streaming Ticker */}
-            <div className="surface-card overflow-hidden border border-zinc-200 bg-white rounded-3xl shadow-lg relative h-[380px] sm:h-[430px] flex flex-col justify-end">
+            {/* Hero Right Column: Balibago Image (Bigger Height, Preserved Aspect Ratio) */}
+            <div className="surface-card overflow-hidden border border-zinc-200 bg-white rounded-3xl shadow-xl relative h-[460px] sm:h-[520px] lg:h-[560px] flex flex-col justify-end">
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
                 style={{ backgroundImage: `url(${balibagoImg})` }}
@@ -273,7 +273,7 @@ function Landing() {
       </section>
 
       {/* SECTION 2: § 02 · LIVE OPERATIONS */}
-      <section id="ops" className="py-16 sm:py-24 border-b border-zinc-200 bg-[#fafafa]">
+      <section id="ops" className="py-10 sm:py-14 border-b border-zinc-200 bg-[#fafafa]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -406,7 +406,7 @@ function Landing() {
       </section>
 
       {/* SECTION 3: § 03 · BALITA MULA SA KAPITAN */}
-      <section id="news" className="py-16 sm:py-24 border-b border-zinc-200 bg-white">
+      <section id="news" className="py-10 sm:py-14 border-b border-zinc-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex items-end justify-between">
             <div>
@@ -490,7 +490,7 @@ function Landing() {
       </section>
 
       {/* SECTION 4: § 04 · ANG INYONG LINGKOD-BAYAN (Verified 2026 Leadership Roster) */}
-      <section id="officials" className="py-16 sm:py-24 border-b border-zinc-200 bg-[#fafafa]">
+      <section id="officials" className="py-10 sm:py-14 border-b border-zinc-200 bg-[#fafafa]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -529,7 +529,7 @@ function Landing() {
       </section>
 
       {/* SECTION 5: § 05 · SERBISYO */}
-      <section id="services" className="py-16 sm:py-24 border-b border-zinc-200 bg-white">
+      <section id="services" className="py-10 sm:py-14 border-b border-zinc-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -571,7 +571,7 @@ function Landing() {
       </section>
 
       {/* SECTION 6: § 06 · ISKEDYUL */}
-      <section id="schedules" className="py-16 sm:py-24 border-b border-zinc-200 bg-[#fafafa]">
+      <section id="schedules" className="py-10 sm:py-14 border-b border-zinc-200 bg-[#fafafa]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex items-end justify-between">
             <div>
@@ -631,7 +631,7 @@ function Landing() {
       </section>
 
       {/* SECTION 7: § 07 · EMERGENCY RESPONSE COMMAND CENTER (High Priority Callout UI) */}
-      <section id="emergency" className="py-16 sm:py-24 bg-white">
+      <section id="emergency" className="py-10 sm:py-14 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           {/* Urgent Emergency Callout Header Banner */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950 via-zinc-900 to-rose-950 p-6 sm:p-10 text-white shadow-2xl border border-rose-800/60">
