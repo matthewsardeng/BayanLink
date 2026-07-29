@@ -3,12 +3,17 @@ import {
   LayoutDashboard,
   Map,
   ListChecks,
+  Clock3,
   BarChart3,
+  MapPin,
   Users,
-  FileText,
+  Megaphone,
+  CalendarDays,
+  FileCheck,
+  UserCheck,
+  History,
   Globe,
   Plus,
-  Building2,
   LogOut,
   User,
 } from "lucide-react";
@@ -28,7 +33,6 @@ import {
 import { useBayanStore, type Language } from "@/lib/store";
 import { useAuth } from "@/lib/auth-store";
 import { TRANSLATIONS } from "@/lib/i18n";
-import { useState } from "react";
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -38,19 +42,29 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
   const t = TRANSLATIONS[language];
 
+  // Exact navigation structure requested by user
   const OPERATIONS = [
-    { title: t.overview, url: "/dashboard", icon: LayoutDashboard },
-    { title: t.issueMap, url: "/dashboard/map", icon: Map },
-    { title: t.issueQueue, url: "/dashboard/issues", icon: ListChecks },
-    { title: t.analytics, url: "/dashboard/analytics", icon: BarChart3 },
+    { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
+    { title: "Live Map", url: "/dashboard/map", icon: Map },
+    { title: "Ticket Queue", url: "/dashboard/issues", icon: ListChecks },
+    { title: "SLA Compliance", url: "/dashboard/sla", icon: Clock3 },
+    { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   ] as const;
 
-  const COMMUNITY = [
-    { title: t.communityFeed, url: "/dashboard/community", icon: Users },
-    { title: t.publicServices, url: "/dashboard/services", icon: FileText },
+  const BARANGAY = [
+    { title: "Puroks", url: "/dashboard/puroks", icon: MapPin },
+    { title: "Officials", url: "/dashboard/officials", icon: Users },
+    { title: "Announcements", url: "/dashboard/announcements", icon: Megaphone },
+    { title: "Schedules", url: "/dashboard/schedules", icon: CalendarDays },
   ] as const;
 
-  const item = (i: { title: string; url: string; icon: typeof Map }) => {
+  const RECORDS = [
+    { title: "Documents", url: "/dashboard/documents", icon: FileCheck },
+    { title: "Residents", url: "/dashboard/residents", icon: UserCheck },
+    { title: "Audit Log", url: "/dashboard/audit-log", icon: History },
+  ] as const;
+
+  const renderItem = (i: { title: string; url: string; icon: typeof Map }) => {
     const active = path === i.url;
     return (
       <SidebarMenuItem key={i.url}>
@@ -91,22 +105,31 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-2 space-y-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider font-semibold text-zinc-400">
             Operations
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{OPERATIONS.map(item)}</SidebarMenu>
+            <SidebarMenu>{OPERATIONS.map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider font-semibold text-zinc-400">
-            Services
+            Barangay
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{COMMUNITY.map(item)}</SidebarMenu>
+            <SidebarMenu>{BARANGAY.map(renderItem)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider font-semibold text-zinc-400">
+            Records
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{RECORDS.map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
@@ -126,7 +149,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {/* Clean Language Selector (Expanded vs Collapsed) */}
+        {/* Language selector */}
         {!collapsed ? (
           <div className="px-3 py-1.5 flex items-center justify-between text-xs text-zinc-500 bg-white rounded-full border border-zinc-200">
             <span className="flex items-center gap-1.5 font-mono text-[11px]">
@@ -159,7 +182,7 @@ export function AppSidebar() {
           </SidebarMenu>
         )}
 
-        {/* User Account / Sign In State */}
+        {/* User profile */}
         {user && !collapsed && (
           <div className="flex items-center justify-between pt-1 text-xs text-zinc-600 font-mono">
             <span className="flex items-center gap-1.5 truncate">
