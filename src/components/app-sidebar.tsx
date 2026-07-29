@@ -90,7 +90,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-zinc-200 bg-[#fafafa] font-sans">
       <SidebarHeader className="p-3">
         <Link to="/" className="flex items-center gap-2.5 p-1 rounded-xl">
-          <img src={logoImg} alt="Tugnay Logo" className="h-8 w-8 rounded-xl object-contain bg-zinc-900 p-1 border border-zinc-200 shadow-sm shrink-0" />
+          <img src={logoImg} alt="Tugnay Logo" className="h-10 w-auto object-contain shrink-0" />
           {!collapsed && (
             <span className="min-w-0">
               <span className="block truncate font-display text-sm font-bold tracking-tight text-zinc-900">
