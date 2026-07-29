@@ -198,11 +198,11 @@ function Landing() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
-                Serbisyo para sa bawat <span className="underline underline-offset-8 decoration-zinc-900">Purok</span> sa Balibago.
+                Mabilis na Tugon, Matibay na <span className="underline underline-offset-8 decoration-zinc-900">Ugnay</span> sa bawat Purok.
               </h1>
 
               <p className="text-base text-zinc-600 leading-relaxed max-w-xl">
-                A transparent operations portal for Barangay Balibago. File concerns, track resolution in real time, and access every municipal service — from clearance to hotlines — in one place.
+                Ang opisyal na civic operations portal ng Barangay Balibago. Mabilis na aksyon sa pampublikong pasilidad, real-time na pagsubaybay sa ulat, at direktang ugnayan sa bawat serbisyong pampubliko.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
