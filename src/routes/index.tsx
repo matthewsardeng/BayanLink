@@ -187,14 +187,8 @@ function Landing() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Hero Left Column */}
             <div className="space-y-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-                  Serbisyo Publiko · Est. 1961
-                </span>
-                <span className="text-zinc-300">|</span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-mono font-bold text-zinc-800">
-                  "Bawat tugon, panibagong ugnay sa komunidad."
-                </span>
+              <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
+                Serbisyo Publiko · Est. 1961
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
@@ -202,7 +196,7 @@ function Landing() {
               </h1>
 
               <p className="text-base text-zinc-600 leading-relaxed max-w-xl">
-                Ang opisyal na civic operations portal ng Barangay Balibago. Mabilis na aksyon sa pampublikong pasilidad, real-time na pagsubaybay sa ulat, at direktang ugnayan sa bawat serbisyong pampubliko.
+                Tugnay connects residents directly with Barangay Balibago operations. Report municipal concerns, track physical repair progress in real time, and request official clearances with total civic transparency.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
