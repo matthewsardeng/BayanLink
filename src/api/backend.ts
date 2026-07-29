@@ -4,6 +4,9 @@ import {
   BARANGAY_INFO,
   CATEGORIES,
   PUROKS,
+  ISSUES,
+  PROPOSALS,
+  FEED,
   type Issue,
   type IssueCategory,
   type IssueStatus,
@@ -23,9 +26,9 @@ class ServerBayanStore {
   }
 
   private init() {
-    this.issues = [];
-    this.proposals = [];
-    this.feed = [];
+    this.issues = [...ISSUES];
+    this.proposals = [...PROPOSALS];
+    this.feed = [...FEED];
   }
 
   public getIssues(): Issue[] {
