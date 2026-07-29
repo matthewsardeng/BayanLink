@@ -108,7 +108,7 @@ function Overview() {
       </div>
 
       {/* Grid: Map + Priority List */}
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] items-stretch">
         <div className="surface-card overflow-hidden border border-zinc-200 rounded-3xl bg-white flex flex-col">
           <div className="flex items-center justify-between border-b border-zinc-200 p-4 bg-zinc-50/50">
             <div>
@@ -123,39 +123,39 @@ function Overview() {
               </Link>
             </Button>
           </div>
-          <BarangayMap issues={issues} className="h-[380px] sm:h-[420px] rounded-none border-none" />
+          <BarangayMap issues={issues} className="flex-1 min-h-[380px] rounded-none border-none" />
         </div>
 
         {/* Priority List */}
-        <div className="surface-card p-5 border border-zinc-200 rounded-3xl bg-white space-y-4 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
-              <h2 className="text-sm font-bold text-zinc-900">Highest Impact Tickets</h2>
-              <span className="text-xs font-mono text-zinc-500">Ranked Score</span>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {priority.map((i) => (
-                <div key={i.id} className="rounded-2xl border border-zinc-200 p-3.5 bg-zinc-50/50 space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-bold text-zinc-900">{i.code}</span>
-                    <StatusPill status={i.status} />
-                  </div>
-                  <h3 className="text-sm font-bold text-zinc-900 truncate">{i.title}</h3>
-                  <div className="flex items-center justify-between text-xs font-mono text-zinc-500">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3 text-zinc-900" /> {i.purok}
-                    </span>
-                    <span className="font-bold text-zinc-900">{i.impact}/100</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div className="surface-card border border-zinc-200 rounded-3xl bg-white flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between border-b border-zinc-200 p-4 bg-zinc-50/50 shrink-0">
+            <h2 className="text-sm font-bold text-zinc-900">Highest Impact Tickets</h2>
+            <span className="text-xs font-mono text-zinc-500">Ranked Score</span>
           </div>
 
-          <Button asChild variant="outline" className="w-full text-xs font-semibold rounded-full border-zinc-300">
-            <Link to="/dashboard/issues">View Full Ticket Queue ({issues.length})</Link>
-          </Button>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {priority.map((i) => (
+              <div key={i.id} className="rounded-2xl border border-zinc-200 p-3.5 bg-zinc-50/50 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-xs font-bold text-zinc-900">{i.code}</span>
+                  <StatusPill status={i.status} />
+                </div>
+                <h3 className="text-sm font-bold text-zinc-900 truncate">{i.title}</h3>
+                <div className="flex items-center justify-between text-xs font-mono text-zinc-500">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-zinc-900" /> {i.purok}
+                  </span>
+                  <span className="font-bold text-zinc-900">{i.impact}/100</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-4 pt-0 shrink-0">
+            <Button asChild variant="outline" className="w-full text-xs font-semibold rounded-full border-zinc-300">
+              <Link to="/dashboard/issues">View Full Ticket Queue ({issues.length})</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
