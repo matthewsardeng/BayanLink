@@ -67,16 +67,33 @@ export const BARANGAY_INFO = {
   ],
 };
 
-export const PUROKS = [
-  "Fields Avenue District",
-  "Bayanihan Astro Park Area",
-  "Mt. View Subdivision",
-  "Sta. Maria Village",
-  "Don Pepe Subdivision",
-  "Manuela Compound",
-  "Diamond Subdivision",
-  "MacArthur Highway Corridor",
-];
+export const PUROK_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  "Fields Avenue District": { lat: 15.1695, lng: 120.5898 },
+  "Bayanihan Astro Park Area": { lat: 15.1672, lng: 120.5915 },
+  "Mt. View Subdivision": { lat: 15.1638, lng: 120.5875 },
+  "Sta. Maria Village": { lat: 15.1645, lng: 120.5935 },
+  "Don Pepe Subdivision": { lat: 15.1618, lng: 120.5912 },
+  "Manuela Compound": { lat: 15.1680, lng: 120.5860 },
+  "Diamond Subdivision": { lat: 15.1605, lng: 120.5880 },
+  "MacArthur Highway Corridor": { lat: 15.1663, lng: 120.5901 },
+};
+
+export const PUROKS = Object.keys(PUROK_COORDINATES);
+
+export function findClosestPurok(lat: number, lng: number): string {
+  let closestPurok = PUROKS[0];
+  let minDistance = Infinity;
+
+  for (const [purok, coords] of Object.entries(PUROK_COORDINATES)) {
+    const dist = Math.hypot(coords.lat - lat, coords.lng - lng);
+    if (dist < minDistance) {
+      minDistance = dist;
+      closestPurok = purok;
+    }
+  }
+
+  return closestPurok;
+}
 
 export type TimelineEntry = {
   status: IssueStatus;

@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { BARANGAY_INFO, PUROKS, CATEGORIES, type IssueCategory } from "@/data/barangay";
+import { BARANGAY_INFO, PUROKS, PUROK_COORDINATES, findClosestPurok, CATEGORIES, type IssueCategory } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth-store";
 import { TRANSLATIONS } from "@/lib/i18n";
@@ -77,6 +77,7 @@ function Report() {
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [pickedCoords, setPickedCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Ticket Lookup State
@@ -117,7 +118,10 @@ function Report() {
 
   const handlePickLocation = (lat: number, lng: number) => {
     setPickedCoords({ lat, lng });
-    const formatted = `Point near ${selectedPurok} (${lat.toFixed(4)}°, ${lng.toFixed(4)}°)`;
+    setMapCenter({ lat, lng });
+    const autoPurok = findClosestPurok(lat, lng);
+    setValue("purok", autoPurok);
+    const formatted = `Point in ${autoPurok} (${lat.toFixed(4)}°, ${lng.toFixed(4)}°)`;
     setValue("street", formatted);
   };
 
@@ -250,6 +254,16 @@ function Report() {
                   </label>
                   <select
                     {...register("purok")}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setValue("purok", val);
+                      const coords = PUROK_COORDINATES[val];
+                      if (coords) {
+                        setMapCenter(coords);
+                        setPickedCoords(coords);
+                        setValue("street", `Center of ${val} (${coords.lat.toFixed(4)}°, ${coords.lng.toFixed(4)}°)`);
+                      }
+                    }}
                     className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm font-medium outline-none text-zinc-900"
                   >
                     {PUROKS.map((p) => (
@@ -277,6 +291,7 @@ function Report() {
                     issues={issues}
                     onPick={handlePickLocation}
                     pickedCoords={pickedCoords}
+                    mapCenter={mapCenter}
                     className="h-[260px]"
                   />
                 </div>

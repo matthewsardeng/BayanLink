@@ -75,6 +75,7 @@ type Props = {
   className?: string;
   compact?: boolean;
   pickedCoords?: { lat: number; lng: number } | null;
+  mapCenter?: { lat: number; lng: number } | null;
 };
 
 type WeatherData = {
@@ -111,6 +112,7 @@ export function BarangayMap({
   className,
   compact = false,
   pickedCoords = null,
+  mapCenter = null,
 }: Props) {
   const { confirmIssue } = useBayanStore();
   const [internalSelectedId, setInternalSelectedId] = useState<string | null>(null);
@@ -136,6 +138,13 @@ export function BarangayMap({
     lat: BARANGAY_INFO.coordinates.lat,
     lng: BARANGAY_INFO.coordinates.lng,
   });
+
+  // Sync center when mapCenter prop changes
+  useEffect(() => {
+    if (mapCenter) {
+      setCenter({ lat: mapCenter.lat, lng: mapCenter.lng });
+    }
+  }, [mapCenter?.lat, mapCenter?.lng]);
   const drag = useRef<{ x: number; y: number } | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
