@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { BARANGAY_INFO } from "@/data/barangay";
+import { BARANGAY_INFO, ISSUES } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth-store";
 import { BarangayMap } from "@/components/barangay-map";
 import {
   ArrowUpRight,
@@ -13,6 +15,10 @@ import {
   FileText,
   CheckCircle2,
   MapPin,
+  User,
+  X,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -37,6 +43,32 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const { issues } = useBayanStore();
+  const { user, login, signup, logout } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+
+  // Form State
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [purok, setPurok] = useState("Fields Avenue District");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const activeIssuesCount = mounted ? issues.length : ISSUES.length;
+
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    if (authMode === "signin") {
+      await login(email);
+    } else {
+      await signup(name || "Resident", email, purok);
+    }
+    setShowAuthModal(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans text-[#18181b]">
@@ -83,9 +115,31 @@ function Landing() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full text-xs font-semibold">
-              <Link to="/dashboard">Operations Desk</Link>
-            </Button>
+            {user ? (
+              <div className="flex items-center gap-2 text-xs font-semibold">
+                <span className="hidden sm:inline text-zinc-600 font-mono">
+                  Resident: <strong className="text-zinc-900">{user.name}</strong>
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={logout}
+                  className="rounded-full text-xs font-semibold border-zinc-300"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowAuthModal(true)}
+                className="rounded-full text-xs font-semibold border-zinc-300 text-zinc-900"
+              >
+                <User className="h-3.5 w-3.5 mr-1" /> Sign In / Sign Up
+              </Button>
+            )}
+
             <Button asChild size="sm" className="rounded-full text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white px-4">
               <Link to="/report">File a concern</Link>
             </Button>
@@ -93,7 +147,95 @@ function Landing() {
         </div>
       </header>
 
-      {/* Hero Section - MolKit Inspired Minimalist Design */}
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4">
+          <div className="surface-card w-full max-w-sm p-6 border border-zinc-200 bg-white rounded-3xl shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+              <h3 className="text-base font-bold text-zinc-900">
+                {authMode === "signin" ? "Sign In to BayanLink" : "Create Resident Account"}
+              </h3>
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAuthSubmit} className="space-y-3.5">
+              {authMode === "signup" && (
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Maria Santos"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="resident@balibago.gov.ph"
+                  className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
+                />
+              </div>
+
+              {authMode === "signup" && (
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">
+                    Balibago Purok / Zone
+                  </label>
+                  <input
+                    type="text"
+                    value={purok}
+                    onChange={(e) => setPurok(e.target.value)}
+                    placeholder="e.g. Fields Avenue District"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
+                  />
+                </div>
+              )}
+
+              <Button type="submit" className="w-full rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs">
+                {authMode === "signin" ? "Sign In" : "Register Account"}
+              </Button>
+            </form>
+
+            <div className="pt-2 text-center text-xs text-zinc-500">
+              {authMode === "signin" ? (
+                <span>
+                  Don't have an account?{" "}
+                  <button onClick={() => setAuthMode("signup")} className="font-bold text-zinc-900 hover:underline">
+                    Create one
+                  </button>
+                </span>
+              ) : (
+                <span>
+                  Already registered?{" "}
+                  <button onClick={() => setAuthMode("signin")} className="font-bold text-zinc-900 hover:underline">
+                    Sign In
+                  </button>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section */}
       <section className="pt-16 pb-14 text-center px-4 sm:px-6">
         <div className="mx-auto max-w-3xl">
           <div className="flex justify-center mb-4">
@@ -121,10 +263,10 @@ function Landing() {
             </Button>
           </div>
 
-          {/* Minimal Stat Pills */}
+          {/* Minimal Stat Pills - Hydration safe */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-zinc-600 border-t border-zinc-200 pt-8">
             <span className="bg-white px-4 py-2 rounded-full border border-zinc-200">
-              <strong className="text-zinc-900">{issues.length}</strong> Active Reports
+              <strong className="text-zinc-900">{activeIssuesCount}</strong> Active Reports
             </span>
             <span className="bg-white px-4 py-2 rounded-full border border-zinc-200">
               <strong className="text-zinc-900">8</strong> Covered Puroks
@@ -144,7 +286,7 @@ function Landing() {
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 <span className="text-xs font-bold text-zinc-900">
-                  Barangay Balibago Schematic Map
+                  Barangay Balibago Interactive Map
                 </span>
               </div>
               <span className="text-xs text-zinc-500 font-mono">Angeles City</span>
@@ -200,7 +342,7 @@ function Landing() {
             </div>
 
             <div className="surface-card p-5 border border-zinc-200 bg-zinc-50/50 rounded-2xl">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-emerald-600 text-white font-bold text-xs mb-3">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs mb-3">
                 3
               </span>
               <h3 className="text-sm font-bold text-zinc-900">Resident Confirmation</h3>

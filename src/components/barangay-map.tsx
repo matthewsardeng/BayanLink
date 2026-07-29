@@ -207,7 +207,10 @@ export function BarangayMap({
     const lng = (nx / worldSize) * 360 - 180;
     const n = Math.PI - (2 * Math.PI * ny) / worldSize;
     const lat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
-    setCenter({ lat, lng });
+    // Clamp center strictly within Pampanga bounds (14.85 - 15.35 N, 120.45 - 120.80 E)
+    const clampedLat = Math.max(14.85, Math.min(15.35, lat));
+    const clampedLng = Math.max(120.45, Math.min(120.80, lng));
+    setCenter({ lat: clampedLat, lng: clampedLng });
   };
 
   const handlePinClick = (id: string) => {

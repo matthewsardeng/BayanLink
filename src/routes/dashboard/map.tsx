@@ -12,7 +12,7 @@ import { useBayanStore } from "@/lib/store";
 import { ImpactMeter, LifecycleTrack, SeverityTag, StatusPill } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Users, MapPin, CalendarClock, ShieldCheck, FilterX, Map as MapIcon } from "lucide-react";
+import { Users, MapPin, CalendarClock, ShieldCheck, FilterX, Map as MapIcon, Inbox } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/map")({
   head: () => ({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/dashboard/map")({
       {
         name: "description",
         content:
-          "Filter Barangay Balibago issues by category, severity, status, and zone on an interactive OpenStreetMap map.",
+          "Filter Barangay Balibago issues by category, severity, status, and zone on an interactive map.",
       },
       { property: "og:title", content: "Barangay Balibago Issue Map — BayanLink" },
       {
@@ -56,75 +56,75 @@ function MapView() {
     setCats((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden bg-background font-sans">
-      {/* Top Map Operational Control Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-white px-4 py-2.5 shrink-0 shadow-sm z-20">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-sky-50 text-sky-700 font-bold shrink-0 border border-sky-200">
-            <MapIcon className="h-4 w-4" />
-          </span>
-          <div className="min-w-0">
-            <h1 className="truncate text-base font-bold leading-tight text-slate-900">
+    <div className="space-y-6 font-sans">
+      {/* Standardized Header */}
+      <div className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-mono text-zinc-500 font-semibold uppercase tracking-wider">
+              Geospatial Operations & GIS Map
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 mt-1">
               Barangay Balibago Live Issue Map
             </h1>
-            <p className="truncate text-xs text-slate-500 font-mono">
-              {filtered.length} active reports · Last updated {BARANGAY_INFO.lastAuditDate}
+            <p className="text-xs text-zinc-500 font-mono mt-0.5">
+              {filtered.length} active reports plotted · Pampanga bounds · Last audit {BARANGAY_INFO.lastAuditDate}
             </p>
           </div>
-        </div>
 
-        {/* Category Line-Icon Filter Bar */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c.name}
-              onClick={() => toggle(c.name)}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors",
-                cats.includes(c.name)
-                  ? "border-transparent bg-slate-900 text-white"
-                  : "border-border bg-white hover:bg-slate-50 text-slate-600"
-              )}
-            >
-              <CategoryIcon category={c.name} className="h-3.5 w-3.5" />
-              <span className="hidden md:inline">{c.name}</span>
-            </button>
-          ))}
-
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value as IssueStatus | "All")}
-            aria-label="Filter by status"
-            className="rounded-lg border border-border bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-800 outline-none"
-          >
-            <option value="All">All Statuses</option>
-            {LIFECYCLE.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+          {/* Category Filter Pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c.name}
+                onClick={() => toggle(c.name)}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                  cats.includes(c.name)
+                    ? "border-transparent bg-zinc-900 text-white font-bold"
+                    : "border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-600"
+                )}
+              >
+                <CategoryIcon category={c.name} className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">{c.name}</span>
+              </button>
             ))}
-          </select>
 
-          {(cats.length > 0 || status !== "All") && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-7 text-xs font-semibold text-sky-700 hover:bg-sky-50"
-              onClick={() => {
-                setCats([]);
-                setStatus("All");
-              }}
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as IssueStatus | "All")}
+              aria-label="Filter by status"
+              className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-semibold text-zinc-900 outline-none cursor-pointer"
             >
-              Reset Filters
-            </Button>
-          )}
+              <option value="All">All Statuses</option>
+              {LIFECYCLE.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+
+            {(cats.length > 0 || status !== "All") && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 text-xs font-semibold text-zinc-900 rounded-full"
+                onClick={() => {
+                  setCats([]);
+                  setStatus("All");
+                }}
+              >
+                Reset Filters
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Main Full-Height Viewport Grid */}
-      <div className="grid flex-1 overflow-hidden lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px]">
-        {/* Full-Bleed Map Panel */}
-        <div className="relative h-full w-full overflow-hidden border-r border-border bg-slate-100">
+      {/* Main Viewport Grid */}
+      <div className="grid gap-6 lg:grid-cols-[1fr_380px] h-[580px]">
+        {/* Map Panel */}
+        <div className="surface-card overflow-hidden border border-zinc-200 bg-white rounded-3xl shadow-sm relative h-full">
           {filtered.length > 0 ? (
             <BarangayMap
               issues={filtered}
@@ -133,18 +133,18 @@ function MapView() {
               className="h-full w-full rounded-none border-none"
             />
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center bg-white text-slate-800">
-              <span className="grid h-12 w-12 place-items-center rounded-xl bg-slate-100 border border-slate-200 text-slate-500 mb-3">
-                <FilterX className="h-6 w-6" />
+            <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center bg-white text-zinc-900">
+              <span className="grid h-14 w-14 place-items-center rounded-2xl bg-zinc-100 border border-zinc-200 text-zinc-500 mb-3">
+                <FilterX className="h-7 w-7 text-zinc-700" />
               </span>
-              <h3 className="text-base font-bold">No reports match selected filters</h3>
-              <p className="mt-1 text-xs text-slate-500 max-w-xs">
-                No active maintenance or hazard reports match the selected filters.
+              <h3 className="text-base font-bold text-zinc-900">No active reports match filter</h3>
+              <p className="mt-1 text-xs text-zinc-500 max-w-xs leading-relaxed">
+                There are no active municipal hazard or infrastructure reports matching your selected categories.
               </p>
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-4 border-slate-300 font-semibold"
+                className="mt-4 rounded-full border-zinc-300 font-semibold text-xs"
                 onClick={() => {
                   setCats([]);
                   setStatus("All");
@@ -156,31 +156,31 @@ function MapView() {
           )}
         </div>
 
-        {/* Sidebar Desk Panel */}
-        <div className="flex flex-col h-full overflow-y-auto bg-slate-50 p-4 space-y-4">
+        {/* Sidebar Panel */}
+        <div className="flex flex-col h-full space-y-4 overflow-y-auto">
           {issue ? (
-            <div className="surface-card p-4 border border-slate-200 space-y-3 rounded-xl bg-white shadow-sm">
-              <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-3">
+            <div className="surface-card p-5 border border-zinc-200 space-y-3 rounded-3xl bg-white shadow-sm shrink-0">
+              <div className="flex items-start justify-between gap-2 border-b border-zinc-100 pb-3">
                 <div>
-                  <span className="font-mono text-xs font-bold text-sky-700">{issue.code}</span>
-                  <h2 className="text-base font-bold text-slate-900 mt-0.5 leading-snug">
+                  <span className="font-mono text-xs font-bold text-zinc-900">{issue.code}</span>
+                  <h2 className="text-base font-bold text-zinc-900 mt-0.5 leading-snug">
                     {issue.title}
                   </h2>
-                  <p className="text-xs text-slate-500 font-mono mt-1 flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-sky-600" /> {issue.purok} · {issue.street}
+                  <p className="text-xs text-zinc-500 font-mono mt-1 flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5 text-zinc-900" /> {issue.purok} · {issue.street}
                   </p>
                 </div>
                 <StatusPill status={issue.status} />
               </div>
 
-              <p className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+              <p className="text-xs text-zinc-700 leading-relaxed bg-zinc-50 p-3 rounded-2xl border border-zinc-200">
                 {issue.summary}
               </p>
 
               <div className="flex flex-wrap items-center gap-2">
                 <SeverityTag severity={issue.severity} />
                 <ImpactMeter score={issue.impact} />
-                <span className="inline-flex items-center gap-1 text-xs text-slate-500 font-mono">
+                <span className="inline-flex items-center gap-1 text-xs text-zinc-500 font-mono">
                   <Users className="h-3.5 w-3.5" /> {issue.households} households
                 </span>
               </div>
@@ -189,34 +189,35 @@ function MapView() {
                 <LifecycleTrack status={issue.status} compact />
               </div>
 
-              <div className="rounded-lg border border-slate-200 p-3 text-xs space-y-1.5 bg-slate-50">
-                <p className="font-semibold text-slate-900">Next Scheduled Action:</p>
-                <p className="text-slate-600">{issue.nextAction}</p>
-                <p className="flex items-center gap-1 text-[11px] font-mono text-slate-500 pt-1.5 border-t border-slate-200">
-                  <CalendarClock className="h-3.5 w-3.5 text-sky-600" /> ETA: {issue.eta} · {issue.department}
-                </p>
+              <div className="rounded-2xl border border-zinc-200 p-3 text-xs space-y-1 bg-zinc-50 font-mono">
+                <p className="font-semibold text-zinc-900">Next Action: {issue.nextAction}</p>
+                <p className="text-[11px] text-zinc-500">ETA: {issue.eta} · {issue.department}</p>
               </div>
 
               <Button
                 size="sm"
                 onClick={() => confirmIssue(issue.id)}
-                className="w-full gap-1.5 text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white"
+                className="w-full gap-1.5 text-xs font-semibold rounded-full bg-zinc-900 hover:bg-zinc-800 text-white"
               >
-                <ShieldCheck className="h-4 w-4 text-emerald-300" /> Confirm Affected Resident (
-                {issue.confirmations})
+                <ShieldCheck className="h-4 w-4 text-emerald-400" /> Confirm Affected Resident ({issue.confirmations})
               </Button>
             </div>
           ) : (
-            <div className="surface-card p-6 text-center text-xs text-slate-500 rounded-xl bg-white">
-              Select a pin on the map to inspect ticket details.
+            <div className="surface-card p-6 text-center text-xs text-zinc-500 rounded-3xl bg-white border border-zinc-200">
+              <p className="font-bold text-zinc-900">No Ticket Selected</p>
+              <p className="mt-1">Select a pin marker on the map to inspect ticket details.</p>
             </div>
           )}
 
           {/* Active Queue List */}
-          <div className="surface-card p-4 border border-slate-200 flex-1 flex flex-col rounded-xl bg-white shadow-sm">
-            <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">
-              <MapPin className="h-3.5 w-3.5 text-sky-600" /> Active Ticket Queue ({filtered.length})
+          <div className="surface-card p-4 border border-zinc-200 flex-1 flex flex-col rounded-3xl bg-white shadow-sm min-h-[220px]">
+            <h3 className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5 font-mono">
+              <span className="flex items-center gap-1.5 text-zinc-900">
+                <MapPin className="h-3.5 w-3.5 text-zinc-900" /> Ticket Queue
+              </span>
+              <span>{filtered.length} reports</span>
             </h3>
+
             {filtered.length > 0 ? (
               <ul className="mt-3 space-y-2 flex-1 overflow-y-auto">
                 {filtered.map((i) => (
@@ -224,17 +225,17 @@ function MapView() {
                     <button
                       onClick={() => setSelected(i.id)}
                       className={cn(
-                        "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2.5 text-left transition-colors text-xs",
+                        "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-2xl border p-2.5 text-left transition-colors text-xs",
                         i.id === selected
-                          ? "border-sky-600 bg-sky-50 font-semibold"
-                          : "border-slate-200 hover:bg-slate-50"
+                          ? "border-zinc-900 bg-zinc-100 font-semibold"
+                          : "border-zinc-200 hover:bg-zinc-50"
                       )}
                     >
                       <span className="min-w-0">
-                        <span className="block truncate font-medium text-slate-900">
+                        <span className="block truncate font-bold text-zinc-900">
                           {i.title}
                         </span>
-                        <span className="block text-[11px] text-slate-500 font-mono mt-0.5">
+                        <span className="block text-[11px] text-zinc-500 font-mono mt-0.5">
                           {i.category} · {i.purok}
                         </span>
                       </span>
@@ -244,8 +245,9 @@ function MapView() {
                 ))}
               </ul>
             ) : (
-              <div className="py-8 text-center text-xs text-slate-500">
-                No tickets matching current filters.
+              <div className="py-10 text-center text-xs text-zinc-500">
+                <Inbox className="h-6 w-6 text-zinc-400 mx-auto mb-2" />
+                <p className="font-bold text-zinc-900">Queue empty for selected criteria</p>
               </div>
             )}
           </div>
