@@ -286,15 +286,6 @@ export function BarangayMap({
         </div>
       )}
 
-      {/* Ctrl + Scroll Hint Overlay Banner */}
-      {showCtrlHint && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px] text-white text-sm font-semibold pointer-events-none transition-opacity">
-          <div className="bg-zinc-900/95 px-5 py-2.5 rounded-full border border-white/20 shadow-xl font-mono text-xs flex items-center gap-2">
-            <span>Use <strong>Ctrl + scroll</strong> to zoom the map</span>
-          </div>
-        </div>
-      )}
-
       {/* Layer & Zoom Controls in Top Right */}
       <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-zinc-200 shadow-sm pointer-events-auto">
         {onPick && (

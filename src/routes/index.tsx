@@ -13,6 +13,7 @@ import balibagoImg from "@/assets/balibago.jpg";
 import logoImg from "@/assets/logo.png";
 import {
   Map,
+  MapPin,
   ShieldCheck,
   ArrowRight,
   Phone,
@@ -38,17 +39,11 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Barangay Balibago — Live Barangay Map & Public Services" },
+      { title: "Tugnay — Barangay Balibago Operations Portal" },
       {
         name: "description",
         content:
-          "Official civic operating system for Barangay Balibago, Angeles City. Live issue map, resident-verified fixes, public announcements, and online clearance applications.",
-      },
-      { property: "og:title", content: "Barangay Balibago — Live Map & Services" },
-      {
-        property: "og:description",
-        content:
-          "Report issues, track clearances, and verify neighborhood repairs in Barangay Balibago, Angeles City.",
+          "Bawat tugon, panibagong ugnay sa komunidad. Report issues, track clearances, and verify neighborhood repairs in Barangay Balibago, Angeles City.",
       },
     ],
   }),
@@ -56,13 +51,14 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
-  const { issues, language, setLanguage } = useBayanStore();
+  const { issues, language, setLanguage, confirmIssue } = useBayanStore();
   const { user, login, signup, logout } = useAuth();
   const t = TRANSLATIONS[language];
   const [mounted, setMounted] = useState(false);
 
-  // Live Map Section Filters
+  // Live Map Section Filters & Selection
   const [mapCategory, setMapCategory] = useState<IssueCategory | "All">("All");
+  const [selectedMapId, setSelectedMapId] = useState<string>(issues[0]?.id || "");
 
   // Auth modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -80,6 +76,8 @@ function Landing() {
   const filteredMapIssues = useMemo(() => {
     return issues.filter((i) => mapCategory === "All" || i.category === mapCategory);
   }, [issues, mapCategory]);
+
+  const selectedMapIssue = issues.find((i) => i.id === selectedMapId) || filteredMapIssues[0];
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,17 +184,16 @@ function Landing() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Hero Left Column */}
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1.5 text-xs font-mono font-semibold text-zinc-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                Barangay Balibago · {mounted ? issues.filter((i) => i.status !== "Resident Verified").length : 5} issues open right now
+              <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
+                Serbisyo Publiko · Est. 1961
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
-                Nothing closes until <span className="underline underline-offset-8 decoration-zinc-900">you</span> say it's fixed.
+                Mabilis na Tugon, Matibay na <span className="underline underline-offset-8 decoration-zinc-900">Ugnay</span> sa bawat Purok.
               </h1>
 
               <p className="text-base text-zinc-600 leading-relaxed max-w-xl">
-                Say it the way you'd tell a neighbour — <em>"baha na naman sa Fields Ave."</em> It lands on the live Balibago map, your street confirms it, and crews cannot mark it done without 5 resident votes.
+                Tugnay connects residents directly with Barangay Balibago operations. Report municipal concerns, track physical repair progress in real time, and request official clearances with total civic transparency.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
@@ -291,12 +288,12 @@ function Landing() {
 
           {/* Interactive Map Layout with Top Filter Pills & Right Side Queue Panel */}
           <div className="surface-card border border-zinc-200 bg-white rounded-3xl overflow-hidden shadow-sm space-y-0">
-            {/* Top Filter Category Bar */}
-            <div className="flex items-center gap-2 p-4 border-b border-zinc-200 overflow-x-auto bg-zinc-50">
+            {/* Top Filter Category Bar (Compact flex-wrap, no horizontal scrollbar) */}
+            <div className="flex flex-wrap items-center gap-1.5 p-3.5 border-b border-zinc-200 bg-zinc-50">
               <button
                 onClick={() => setMapCategory("All")}
                 className={cn(
-                  "rounded-full px-3.5 py-1.5 text-xs font-mono font-bold uppercase transition-all shrink-0 border",
+                  "rounded-full px-3 py-1 text-xs font-mono font-bold uppercase transition-all shrink-0 border",
                   mapCategory === "All"
                     ? "bg-zinc-900 text-white border-transparent"
                     : "bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-100"
@@ -311,7 +308,7 @@ function Landing() {
                     key={c.name}
                     onClick={() => setMapCategory(c.name)}
                     className={cn(
-                      "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-mono font-bold uppercase transition-all shrink-0 border",
+                      "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-bold uppercase transition-all shrink-0 border",
                       mapCategory === c.name
                         ? "bg-zinc-900 text-white border-transparent"
                         : "bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-100"
@@ -324,64 +321,75 @@ function Landing() {
               })}
             </div>
 
-            {/* Split View: Map (Left/Top) & Separate Side Queue Panel (Right) */}
-            <div className="grid lg:grid-cols-[1fr_360px] min-h-[460px]">
+            {/* Split View: Map (Left) & Live Ticket Queue Panel (Right) */}
+            <div className="grid lg:grid-cols-[1fr_360px] min-h-[480px]">
               {/* Main Map Tile Viewport */}
-              <div className="relative min-h-[380px] lg:min-h-[460px] bg-zinc-100 border-b lg:border-b-0 lg:border-r border-zinc-200">
-                <BarangayMap issues={filteredMapIssues} className="h-full w-full rounded-none border-none" />
+              <div className="relative min-h-[380px] lg:min-h-[480px] bg-zinc-100 border-b lg:border-b-0 lg:border-r border-zinc-200">
+                <BarangayMap
+                  issues={filteredMapIssues}
+                  selectedId={selectedMapId}
+                  onSelect={setSelectedMapId}
+                  className="h-full w-full rounded-none border-none"
+                />
               </div>
 
-              {/* Separate Right Side Panel (HIGHEST IMPACT QUEUE) */}
-              <div className="p-5 flex flex-col justify-between space-y-4 bg-white font-mono">
-                <div>
-                  <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider border-b border-zinc-100 pb-3 mb-3">
-                    HIGHEST IMPACT QUEUE
+              {/* Separate Right Side Panel (LIVE SELECTED TICKET & QUEUE) */}
+              <div className="p-4 flex flex-col justify-between space-y-3 bg-white font-mono overflow-hidden">
+                {selectedMapIssue ? (
+                  <div className="p-3.5 rounded-2xl border border-zinc-200 bg-zinc-50/80 space-y-2">
+                    <div className="flex items-center justify-between gap-2 border-b border-zinc-200/60 pb-2">
+                      <span className="text-xs font-bold text-zinc-900">{selectedMapIssue.code}</span>
+                      <StatusPill status={selectedMapIssue.status} />
+                    </div>
+                    <h3 className="font-bold text-xs text-zinc-900 leading-snug">{selectedMapIssue.title}</h3>
+                    <p className="text-[11px] text-zinc-500 flex items-center gap-1">
+                      <MapPin className="h-3 w-3 text-zinc-900" /> {selectedMapIssue.purok}
+                    </p>
+                    <p className="text-[11px] text-zinc-600 leading-relaxed font-sans line-clamp-2">
+                      {selectedMapIssue.summary}
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => confirmIssue(selectedMapIssue.id)}
+                      className="w-full text-xs font-semibold rounded-full bg-zinc-900 text-white mt-1"
+                    >
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 mr-1" /> Confirm Resident ({selectedMapIssue.confirmations})
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-3 text-center text-xs text-zinc-500">
+                    <p className="font-bold text-zinc-900">Select a pin marker on the map</p>
+                  </div>
+                )}
+
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                  <h3 className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider border-b border-zinc-100 pb-2 mb-2">
+                    LIVE TICKET QUEUE ({filteredMapIssues.length})
                   </h3>
 
-                  <ul className="space-y-3">
-                    <li className="flex items-center justify-between p-3 rounded-2xl border border-zinc-200 bg-zinc-50/50">
-                      <div>
-                        <span className="text-[11px] text-zinc-500 font-bold">BAL-2242 · Purok 5</span>
-                        <p className="font-bold text-zinc-900 text-xs">Flooding</p>
-                      </div>
-                      <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase">
-                        4H LEFT
-                      </span>
-                    </li>
-
-                    <li className="flex items-center justify-between p-3 rounded-2xl border border-zinc-200 bg-zinc-50/50">
-                      <div>
-                        <span className="text-[11px] text-zinc-500 font-bold">BAL-2240 · Purok 3</span>
-                        <p className="font-bold text-zinc-900 text-xs">Streetlight</p>
-                      </div>
-                      <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                        1D
-                      </span>
-                    </li>
-
-                    <li className="flex items-center justify-between p-3 rounded-2xl border border-zinc-200 bg-zinc-50/50">
-                      <div>
-                        <span className="text-[11px] text-zinc-500 font-bold">BAL-2237 · Purok 7</span>
-                        <p className="font-bold text-zinc-900 text-xs">Garbage</p>
-                      </div>
-                      <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                        2D
-                      </span>
-                    </li>
-
-                    <li className="flex items-center justify-between p-3 rounded-2xl border border-emerald-200 bg-emerald-50/50">
-                      <div>
-                        <span className="text-[11px] text-emerald-800 font-bold">BAL-2231 · Purok 2</span>
-                        <p className="font-bold text-emerald-900 text-xs">Water</p>
-                      </div>
-                      <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase">
-                        RESOLVED
-                      </span>
-                    </li>
-                  </ul>
+                  <div className="space-y-2 overflow-y-auto flex-1 pr-1">
+                    {filteredMapIssues.map((i) => (
+                      <button
+                        key={i.id}
+                        onClick={() => setSelectedMapId(i.id)}
+                        className={cn(
+                          "w-full text-left p-2.5 rounded-xl border text-xs transition-all flex items-center justify-between gap-2",
+                          i.id === selectedMapIssue?.id
+                            ? "border-zinc-900 bg-zinc-100 font-bold"
+                            : "border-zinc-200 bg-white hover:bg-zinc-50"
+                        )}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-zinc-900 truncate text-[11px]">{i.title}</p>
+                          <p className="text-[10px] text-zinc-500 truncate">{i.category} · {i.purok}</p>
+                        </div>
+                        <StatusPill status={i.status} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs">
+                <Button asChild size="sm" className="w-full rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs shrink-0">
                   <Link to="/dashboard/issues">View Complete Queue ({issues.length})</Link>
                 </Button>
               </div>
