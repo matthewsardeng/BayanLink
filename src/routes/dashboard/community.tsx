@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BADGES, BARANGAY_INFO, type FeedItem } from "@/data/barangay";
+import { BADGES, BARANGAY_INFO, PUROKS, type FeedItem } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth-store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Users, CheckCircle2, Inbox, Vote, MessageSquare } from "lucide-react";
+import { ShieldCheck, Users, CheckCircle2, Inbox, Vote, MessageSquare, Plus, X } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/community")({
   head: () => ({
@@ -36,9 +37,17 @@ const KINDS: (FeedItem["kind"] | "All")[] = [
 ];
 
 function Community() {
-  const { feed: storeFeed, proposals, voteProposal } = useBayanStore();
+  const { feed: storeFeed, proposals, voteProposal, addProposal } = useBayanStore();
+  const { user } = useAuth();
   const [kind, setKind] = useState<(typeof KINDS)[number]>("All");
   const [votedLocal, setVotedLocal] = useState<string[]>([]);
+
+  // Proposal Submission Modal State
+  const [showProposalModal, setShowProposalModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [blurb, setBlurb] = useState("");
+  const [selectedPurok, setSelectedPurok] = useState(user?.purok || PUROKS[0]);
+  const [goal, setGoal] = useState(100);
 
   const feed = storeFeed.filter((f) => kind === "All" || f.kind === kind);
 
@@ -49,19 +58,45 @@ function Community() {
     }
   };
 
+  const handleProposalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || !blurb) return;
+    await addProposal({
+      title,
+      purok: selectedPurok,
+      blurb,
+      goal: Number(goal) || 100,
+    });
+    setTitle("");
+    setBlurb("");
+    setShowProposalModal(false);
+  };
+
   return (
     <div className="space-y-6 font-sans">
       {/* Standardized Header */}
       <div className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl">
-        <span className="text-xs font-mono text-zinc-500 font-semibold uppercase tracking-wider">
-          Community Participation & Stream
-        </span>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 mt-1">
-          Barangay Balibago Community Desk
-        </h1>
-        <p className="text-xs text-zinc-500 font-mono mt-0.5">
-          Live stream feed for {BARANGAY_INFO.name}, community proposals, and resident engagement.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-mono text-zinc-500 font-semibold uppercase tracking-wider">
+              Community Participation & Stream
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 mt-1">
+              Barangay Balibago Community Desk
+            </h1>
+            <p className="text-xs text-zinc-500 font-mono mt-0.5">
+              Live stream feed for {BARANGAY_INFO.name}, community proposals, and resident engagement.
+            </p>
+          </div>
+
+          <Button
+            size="sm"
+            onClick={() => setShowProposalModal(true)}
+            className="rounded-full text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white px-4"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" /> Propose Initiative
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
@@ -120,12 +155,17 @@ function Community() {
 
         <div className="space-y-6">
           <section className="surface-card p-5 border border-zinc-200 rounded-3xl bg-white shadow-sm">
-            <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-              <Vote className="h-4 w-4 text-zinc-900" /> Balibago Community Proposals
-            </h2>
-            <p className="text-xs text-zinc-500 font-mono mt-0.5 mb-4">
-              Resident-submitted initiatives for neighborhood voting.
-            </p>
+            <div className="flex items-center justify-between border-b border-zinc-200 pb-3 mb-4">
+              <div>
+                <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                  <Vote className="h-4 w-4 text-zinc-900" /> Balibago Community Proposals
+                </h2>
+                <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                  Resident-submitted initiatives for neighborhood voting.
+                </p>
+              </div>
+            </div>
+
             {proposals.length > 0 ? (
               <ul className="space-y-4">
                 {proposals.map((p) => {
@@ -207,6 +247,91 @@ function Community() {
           </section>
         </div>
       </div>
+
+      {/* Proposal Submission Modal */}
+      {showProposalModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4">
+          <div className="surface-card w-full max-w-md p-6 border border-zinc-200 bg-white rounded-3xl shadow-xl space-y-4 text-xs font-sans">
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+              <h3 className="text-base font-bold text-zinc-900">Submit Community Proposal</h3>
+              <button
+                onClick={() => setShowProposalModal(false)}
+                className="rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleProposalSubmit} className="space-y-3.5">
+              <div>
+                <label className="block font-bold text-zinc-500 uppercase tracking-wider text-[10px] mb-1">
+                  Proposal Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Solar Streetlight Installation along MacArthur Corridor"
+                  className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-500 uppercase tracking-wider text-[10px] mb-1">
+                  Balibago Zone / Purok
+                </label>
+                <select
+                  value={selectedPurok}
+                  onChange={(e) => setSelectedPurok(e.target.value)}
+                  className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
+                >
+                  {PUROKS.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-500 uppercase tracking-wider text-[10px] mb-1">
+                  Short Description & Community Benefit
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={blurb}
+                  onChange={(e) => setBlurb(e.target.value)}
+                  placeholder="Explain why this proposal will benefit residents in this area..."
+                  className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900 leading-relaxed"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-500 uppercase tracking-wider text-[10px] mb-1">
+                  Target Resident Votes Goal
+                </label>
+                <input
+                  type="number"
+                  min={10}
+                  max={1000}
+                  value={goal}
+                  onChange={(e) => setGoal(Number(e.target.value))}
+                  className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 font-medium outline-none focus:ring-2 focus:ring-zinc-900 text-zinc-900"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs"
+              >
+                Launch Proposal Vote Campaign
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

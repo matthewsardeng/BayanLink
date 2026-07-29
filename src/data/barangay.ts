@@ -403,3 +403,40 @@ export const TREND = [
   { month: "Jun", resolved: 58, reported: 54 },
   { month: "Jul", resolved: 62, reported: 60 },
 ];
+
+export type ServiceApplication = {
+  id: string;
+  code: string;
+  serviceId: string;
+  serviceName: string;
+  applicantName: string;
+  purpose: string;
+  purok: string;
+  status: "Pending" | "Processing" | "Ready for Pickup" | "Approved";
+  submittedAt: string;
+};
+
+export const INITIAL_SERVICE_APPLICATIONS: ServiceApplication[] = [
+  {
+    id: "app-1",
+    code: "SVC-2026-01",
+    serviceId: "s1",
+    serviceName: "Barangay Clearance",
+    applicantName: "Maria Santos",
+    purpose: "Employment Requirement",
+    purok: "Fields Avenue District",
+    status: "Ready for Pickup",
+    submittedAt: "2026-07-28 10:30",
+  },
+  {
+    id: "app-2",
+    code: "SVC-2026-02",
+    serviceId: "s2",
+    serviceName: "Certificate of Indigency",
+    applicantName: "Juan Dela Cruz",
+    purpose: "Medical Assistance",
+    purok: "Sta. Maria Village",
+    status: "Processing",
+    submittedAt: "2026-07-29 08:15",
+  },
+];
