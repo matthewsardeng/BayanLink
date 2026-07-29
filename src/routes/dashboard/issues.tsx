@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BARANGAY_INFO, CATEGORIES, type IssueCategory } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { ImpactMeter, LifecycleTrack, SeverityTag, StatusPill } from "@/components/status";
-import { BeforeAfter } from "@/components/landing/before-after";
+import { BeforeAfter } from "@/components/before-after";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Repeat, ShieldAlert, ShieldCheck, Inbox, Search, ListFilter } from "lucide-react";
