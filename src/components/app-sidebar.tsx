@@ -160,15 +160,16 @@ export function AppSidebar() {
 
         {/* Language selector */}
         {!collapsed ? (
-          <div className="px-3 py-1.5 flex items-center justify-between text-xs text-zinc-300 bg-zinc-900 rounded-full border border-zinc-800">
-            <span className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-400">
-              <Globe className="h-3.5 w-3.5 text-zinc-400" /> Language
+          <div className="px-2.5 py-1.5 flex items-center justify-between text-xs text-zinc-300 bg-zinc-900 rounded-full border border-zinc-800 gap-1">
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-400 shrink-0">
+              <Globe className="h-3.5 w-3.5 text-zinc-400 shrink-0" /> Language
             </span>
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as Language)}
               aria-label="Select Language"
-              className="bg-transparent text-xs text-white font-semibold focus:outline-none cursor-pointer"
+              className="bg-transparent text-[11px] text-white font-bold outline-none cursor-pointer text-right min-w-0 font-sans"
+              style={{ textAlign: "right", textAlignLast: "right" }}
             >
               <option value="en" className="bg-zinc-950 text-white">English</option>
               <option value="tl" className="bg-zinc-950 text-white">Tagalog</option>
