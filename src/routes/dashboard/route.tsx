@@ -25,9 +25,9 @@ function DashboardLayout() {
 
   return (
     <SidebarProvider defaultOpen={!isMobile}>
-      <div className="flex min-h-screen w-full bg-[#fafafa] font-sans text-[#18181b]">
+      <div className="flex min-h-screen w-full bg-zinc-950 font-sans text-[#18181b] p-0 md:p-3 gap-0">
         <AppSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col bg-[#fafafa] rounded-none md:rounded-3xl border-0 md:border border-zinc-200/80 shadow-2xl overflow-hidden min-h-[calc(100vh-1.5rem)]">
           {/* Dashboard Header Bar */}
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-zinc-200 bg-[#fafafa]/90 px-4 backdrop-blur-md">
             <SidebarTrigger />
