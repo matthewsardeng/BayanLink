@@ -38,17 +38,17 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Tugnay — Tugon at Ugnay · Barangay Balibago Portal" },
+      { title: "Barangay Balibago — Live Barangay Map & Public Services" },
       {
         name: "description",
         content:
-          "Tugnay (Tugon at Ugnay): Official civic operations portal for Barangay Balibago, Angeles City. Live issue map, resident-verified fixes, public announcements, and online clearance applications.",
+          "Official civic operating system for Barangay Balibago, Angeles City. Live issue map, resident-verified fixes, public announcements, and online clearance applications.",
       },
-      { property: "og:title", content: "Tugnay — Tugon at Ugnay · Barangay Balibago" },
+      { property: "og:title", content: "Barangay Balibago — Live Map & Services" },
       {
         property: "og:description",
         content:
-          "Bawat tugon, panibagong ugnay sa komunidad. Report issues, track clearances, and verify neighborhood repairs in Barangay Balibago, Angeles City.",
+          "Report issues, track clearances, and verify neighborhood repairs in Barangay Balibago, Angeles City.",
       },
     ],
   }),
@@ -102,7 +102,7 @@ function Landing() {
       <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-3 shrink-0">
-            <img src={logoImg} alt="Tugnay Logo" className="h-11 sm:h-12 w-11 sm:w-12 rounded-full bg-white p-1 border border-zinc-200 shadow-sm object-contain shrink-0" />
+            <img src={logoImg} alt="Tugnay Logo" className="h-12 sm:h-14 w-auto object-contain shrink-0" />
             <div className="hidden min-[380px]:block">
               <span className="block font-display text-lg font-bold tracking-tight text-zinc-900 leading-none">
                 Tugnay
@@ -186,16 +186,17 @@ function Landing() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Hero Left Column */}
             <div className="space-y-6">
-              <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-                Serbisyo Publiko · Est. 1961
+              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1.5 text-xs font-mono font-semibold text-zinc-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                Barangay Balibago · {mounted ? issues.filter((i) => i.status !== "Resident Verified").length : 5} issues open right now
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
-                Mabilis na Tugon, Matibay na <span className="underline underline-offset-8 decoration-zinc-900">Ugnay</span> sa bawat Purok.
+                Nothing closes until <span className="underline underline-offset-8 decoration-zinc-900">you</span> say it's fixed.
               </h1>
 
               <p className="text-base text-zinc-600 leading-relaxed max-w-xl">
-                Tugnay connects residents directly with Barangay Balibago operations. Report municipal concerns, track physical repair progress in real time, and request official clearances with total civic transparency.
+                Say it the way you'd tell a neighbour — <em>"baha na naman sa Fields Ave."</em> It lands on the live Balibago map, your street confirms it, and crews cannot mark it done without 5 resident votes.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
