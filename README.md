@@ -1,63 +1,83 @@
-# BayanLink Balibago — Barangay Balibago Civic Operations & Issue Portal
+# BayanLink Balibago
 
-A transparent public service application built for **Barangay Balibago, Angeles City, Pampanga**. BayanLink enables residents to report municipal concerns, pinpoint locations on an interactive OpenStreetMap canvas, follow live dispatch progress, and participate in neighborhood resolution verification.
-
----
-
-## 🌟 Key Features
-
-- 🗺️ **Interactive OpenStreetMap Issue Map**: Fast slippy raster tile engine with smooth drag panning, zoom controls, category filters, and pin-point coordinate selection.
-- 📝 **Public Issue Filing & Auto-Routing**: Plain language reporting with category detection, photo evidence attachment, and optional anonymous tracking codes.
-- 🛡️ **Resident Verification Lockout**: Ensures tickets cannot be closed unilaterally by administrative staff without local resident resolution votes.
-- 🏢 **Public Services Explorer**: Directory of official barangay clearances, indigency certificates, business permit requirements, fee schedules, and window processing times.
-- 🚨 **Emergency Directory**: 24/7 hotline directory for Barangay Balibago dispatch, Police Station 4, BFP Fire Substation, and Angeles City DRRMO.
-- 📊 **Operational Analytics**: Active report distribution, neighborhood impact metrics, and inspection response speeds.
+An open-access civic operations platform and municipal issue tracking system built for **Barangay Balibago, Angeles City, Pampanga**.
 
 ---
 
-## 🛠️ Tech Stack
+## Executive Summary & Purpose
 
-- **Framework**: [TanStack Start](https://tanstack.com/start) / React 19 / TypeScript
-- **Routing**: [TanStack Router](https://tanstack.com/router)
-- **Map Engine**: OpenStreetMap (Slippy Raster Tiles & Mercator Projection)
-- **Styling**: Tailwind CSS v4, Lucide React Icons
+Local barangay administration frequently faces operational challenges regarding public infrastructure maintenance, drainage reporting, street lighting outages, and emergency response coordination. Information gaps between community residents and municipal government units often result in unverified reports, duplicated work orders, or premature ticket closures without verifiable physical resolution.
+
+**BayanLink Balibago** was engineered to address these challenges by providing a centralized, transparent platform for civic issue intake, real-time spatial visualization, and resident-backed resolution verification. By combining location-precise reporting with OpenStreetMap geospatial rendering, the system establishes a reliable operational feedback loop between community members, municipal inspectors, and public works departments.
+
+---
+
+## Civic Significance & Operational Impact
+
+1. **Accountability Through Resident Verification**
+   Traditional municipal ticketing systems allow administrative staff to close maintenance requests unilaterally. BayanLink introduces a Resident Verification Protocol requiring local community confirmation before a ticket achieves permanent resolution status, preventing unverified closures.
+
+2. **Geospatial Issue Mapping & Spatial Awareness**
+   By plotting reports onto real-world geographical coordinates using OpenStreetMap raster tiles, local officials can identify high-density hazard zones, recurring drainage blockages along major thoroughfares (such as Fields Avenue and the MacArthur Highway corridor), and underserved residential puroks.
+
+3. **Streamlined Service Accessibility**
+   Beyond issue tracking, the platform serves as an official public service directory, detailing requirements, fee schedules, and processing timelines for essential municipal clearances (including Barangay Certificates, Certificates of Indigency, and Business Permit Clearances).
+
+4. **Emergency Hotline Coordination**
+   The platform integrates direct contact routing for local emergency response agencies, including Police Station 4 (Balibago Substation), the Bureau of Fire Protection (BFP), and the Angeles City Disaster Risk Reduction and Management Office (ACDRRMO).
+
+---
+
+## System Architecture & Technical Specifications
+
+BayanLink is built as a full-stack, type-safe web application utilizing modern web standards for fast load speeds, offline-resilient local caching, and low-latency interaction.
+
+### Technology Stack
+
+- **Application Framework**: TanStack Start (React 19)
+- **Routing Engine**: TanStack Router (File-Based Type-Safe Routing)
+- **Language**: TypeScript
+- **Geospatial Engine**: OpenStreetMap (Mercator Projection & Raster Tile Rendering)
+- **UI Architecture & Styling**: Tailwind CSS (v4), Radix UI Primitives, Lucide Icons
 - **Data Visualization**: Recharts
 
 ---
 
-## 🚀 Getting Started
+## Local Development & Execution
 
 ### Prerequisites
 
-Ensure you have **Node.js (v18+)** installed on your machine.
+- Node.js version 18.0.0 or higher
+- npm package manager
 
-### Installation & Local Setup
+### Setup Instructions
 
-1. **Clone the repository**:
+1. Clone the repository:
    ```bash
    git clone https://github.com/matthewsardeng/BayanLink.git
    cd BayanLink
    ```
 
-2. **Install dependencies**:
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. **Start the development server**:
+3. Run the development server:
    ```bash
    npm run dev
    ```
 
-4. **Build for production**:
+4. Build production bundle:
    ```bash
    npm run build
    ```
 
 ---
 
-## 📍 Coverage & Official Information
+## Institutional Context
 
-- **LGU**: Barangay Balibago, Angeles City, Pampanga (Region III)
-- **Zip Code**: 2009
-- **Coordinates**: 15.1663° N, 120.5901° E
+- **Jurisdiction**: Barangay Balibago, Angeles City, Pampanga, Philippines
+- **Region**: Central Luzon (Region III)
+- **Postal Code**: 2009
+- **Geographical Coordinates**: 15.1663° N, 120.5901° E
