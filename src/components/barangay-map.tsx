@@ -261,6 +261,10 @@ export function BarangayMap({
   const handlePinClick = (id: string) => {
     setInternalSelectedId(id);
     onSelect?.(id);
+    const targetIssue = issues.find((i) => i.id === id);
+    if (targetIssue && targetIssue.lat && targetIssue.lng) {
+      setCenter({ lat: targetIssue.lat, lng: targetIssue.lng });
+    }
   };
 
   const worldCx = lngToWorldX(center.lng, zoom);
@@ -539,49 +543,6 @@ export function BarangayMap({
           © OpenStreetMap · CartoDB
         </div>
       </div>
-
-      {/* Selected Issue Drawer */}
-      {selectedIssue && !compact && (
-        <div className="absolute bottom-3 left-3 right-3 z-30 rounded-2xl border border-zinc-200 bg-white/95 p-4 shadow-md backdrop-blur-md text-zinc-900">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-zinc-900">{selectedIssue.code}</span>
-                <StatusPill status={selectedIssue.status} />
-              </div>
-              <h3 className="text-sm font-bold text-zinc-900 mt-1">{selectedIssue.title}</h3>
-              <p className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5 font-mono">
-                <MapPin className="h-3.5 w-3.5 text-zinc-900" /> {selectedIssue.purok} · {selectedIssue.street}
-              </p>
-            </div>
-            <button
-              onClick={() => setInternalSelectedId(null)}
-              className="rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          <p className="text-xs text-zinc-600 mt-2.5 bg-zinc-50 p-2.5 rounded-xl border border-zinc-200 leading-relaxed">
-            {selectedIssue.summary}
-          </p>
-
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="text-zinc-500 font-mono text-[11px]">
-              Impact: <strong className="text-zinc-900">{selectedIssue.impact}/100</strong> · {selectedIssue.confirmations} confirmations
-            </span>
-
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 text-xs gap-1.5 font-semibold rounded-full border-zinc-300"
-              onClick={() => confirmIssue(selectedIssue.id)}
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Confirm Affected Resident ({selectedIssue.confirmations})
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
