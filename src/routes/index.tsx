@@ -105,14 +105,14 @@ function Landing() {
     <div className="min-h-screen bg-[#fafafa] text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white">
       {/* STICKY TOP HEADER NAVIGATION */}
       <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-20 sm:h-24 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-3 shrink-0">
-            <img src={logoImg} alt="Tugnay Logo" className="h-12 sm:h-14 w-auto object-contain shrink-0" />
+            <img src={logoImg} alt="Tugnay Logo" className="h-16 sm:h-20 w-auto object-contain shrink-0" />
             <div className="hidden min-[380px]:block">
-              <span className="block font-display text-lg font-bold tracking-tight text-zinc-900 leading-none">
+              <span className="block font-display text-xl font-bold tracking-tight text-zinc-900 leading-none">
                 Tugnay
               </span>
-              <span className="block text-[11px] font-mono text-zinc-500 font-semibold mt-0.5">
+              <span className="block text-xs font-mono text-zinc-500 font-semibold mt-0.5">
                 Tugon at Ugnay · Balibago
               </span>
             </div>
