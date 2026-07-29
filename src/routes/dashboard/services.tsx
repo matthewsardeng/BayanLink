@@ -297,23 +297,55 @@ function Services() {
                 </Button>
               </form>
             ) : (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-900 space-y-3">
-                <p className="font-bold flex items-center gap-1.5 text-sm text-emerald-800">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Application Submitted
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-xs text-emerald-900 space-y-4">
+                <div className="flex items-center justify-between border-b border-emerald-200 pb-3">
+                  <div>
+                    <span className="font-mono text-[10px] uppercase font-bold text-emerald-700">Official Clearance Slip</span>
+                    <h3 className="font-bold text-base text-emerald-950 mt-0.5">Barangay Balibago, Angeles City</h3>
+                  </div>
+                  <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-emerald-200/60 font-mono space-y-2 text-zinc-800">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-500">Tracking Code:</span>
+                    <strong className="text-zinc-950 text-sm font-extrabold">{submittedAppCode}</strong>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-500">Applicant Name:</span>
+                    <strong className="text-zinc-900">{applicantName}</strong>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-500">Service:</span>
+                    <strong className="text-zinc-900">{selectedService.name}</strong>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-500">Fee / Window:</span>
+                    <strong className="text-zinc-900">{selectedService.fee} ({selectedService.location})</strong>
+                  </div>
+                </div>
+
+                <p className="text-emerald-800 text-[11px] leading-relaxed">
+                  Your application has been registered. Present this claim code at the Barangay Hall Window for verification & issuance.
                 </p>
-                <p className="font-mono text-zinc-700">
-                  Tracking Application Code: <strong>{submittedAppCode}</strong>
-                </p>
-                <p className="text-zinc-600 leading-relaxed">
-                  Your application has been logged at Window 1, Barangay Hall Complex. Please present this tracking code upon pickup.
-                </p>
-                <Button
-                  size="sm"
-                  className="w-full rounded-full font-semibold bg-emerald-800 text-white"
-                  onClick={() => setSelectedService(null)}
-                >
-                  Close Receipt
-                </Button>
+
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 rounded-full font-semibold border-emerald-300 bg-white text-emerald-950 hover:bg-emerald-100"
+                    onClick={() => window.print()}
+                  >
+                    Print / Save Slip (PDF)
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 rounded-full font-semibold bg-emerald-900 hover:bg-emerald-950 text-white"
+                    onClick={() => setSelectedService(null)}
+                  >
+                    Done
+                  </Button>
+                </div>
               </div>
             )}
           </div>

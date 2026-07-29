@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarangayMap } from "@/components/barangay-map";
-import { BARANGAY_INFO } from "@/data/barangay";
+import { BARANGAY_INFO, PUROKS } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { StatusPill } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -10,20 +9,21 @@ import {
   CheckCircle2,
   Clock,
   Users,
-  Building2,
   MapPin,
+  Map,
+  ShieldCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
     meta: [
-      { title: "Barangay Balibago Operations — BayanLink" },
+      { title: "Barangay Balibago Operations — Tugnay" },
       {
         name: "description",
         content:
           "Public overview for Barangay Balibago, Angeles City: active issues, impact priorities, and resolution metrics.",
       },
-      { property: "og:title", content: "Barangay Balibago Operations — BayanLink" },
+      { property: "og:title", content: "Barangay Balibago Operations — Tugnay" },
       {
         property: "og:description",
         content: "Active issues and resolution performance for Barangay Balibago.",
@@ -37,6 +37,17 @@ function Overview() {
   const { issues } = useBayanStore();
 
   const priority = [...issues].sort((a, b) => b.impact - a.impact).slice(0, 5);
+
+  // Group issues count per Purok
+  const purokCounts = PUROKS.map((purok) => {
+    const activeInPurok = issues.filter((i) => i.purok === purok);
+    const criticalInPurok = activeInPurok.filter((i) => i.severity === "Critical" || i.severity === "High");
+    return {
+      name: purok,
+      count: activeInPurok.length,
+      criticalCount: criticalInPurok.length,
+    };
+  }).sort((a, b) => b.count - a.count);
 
   const kpis = [
     {
@@ -84,7 +95,7 @@ function Overview() {
 
           <div className="flex flex-wrap items-center gap-2">
             <Button asChild size="sm" variant="outline" className="rounded-full text-xs font-semibold border-zinc-300">
-              <Link to="/dashboard/map">Explore Map</Link>
+              <Link to="/dashboard/map">Explore Live Map ↗</Link>
             </Button>
             <Button asChild size="sm" className="rounded-full text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white px-4">
               <Link to="/report">File New Concern</Link>
@@ -107,23 +118,64 @@ function Overview() {
         ))}
       </div>
 
-      {/* Grid: Map + Priority List */}
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] items-stretch">
-        <div className="surface-card overflow-hidden border border-zinc-200 rounded-3xl bg-white flex flex-col">
-          <div className="flex items-center justify-between border-b border-zinc-200 p-4 bg-zinc-50/50">
+      {/* Grid: Purok Hotspots + Priority List */}
+      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr] items-stretch">
+        {/* Purok Hotspot Breakdown Card */}
+        <div className="surface-card border border-zinc-200 rounded-3xl bg-white flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between border-b border-zinc-200 p-4 bg-zinc-50/50 shrink-0">
             <div>
-              <h2 className="text-sm font-bold text-zinc-900">Barangay Balibago Schematic Map</h2>
-              <p className="text-xs text-zinc-500 font-mono">
-                Real-time issue distribution along MacArthur Hwy, Fields Ave & residential zones.
+              <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-zinc-900" /> Balibago Purok Incident Hotspots
+              </h2>
+              <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                Active community reports distributed across 8 municipal zones
               </p>
             </div>
-            <Button asChild size="sm" variant="ghost" className="rounded-full text-xs font-semibold text-zinc-900">
+            <Button asChild size="sm" variant="outline" className="rounded-full text-xs font-semibold border-zinc-300">
               <Link to="/dashboard/map" className="gap-1 font-mono">
-                Full map <ArrowUpRight className="h-3.5 w-3.5" />
+                Open Interactive GIS Map <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
-          <BarangayMap issues={issues} className="flex-1 min-h-[380px] rounded-none border-none" />
+
+          <div className="p-4 flex-1 overflow-y-auto space-y-3">
+            {purokCounts.map((p) => {
+              const maxCount = Math.max(...purokCounts.map((x) => x.count), 1);
+              const percentage = Math.round((p.count / maxCount) * 100);
+              return (
+                <div key={p.name} className="p-3 rounded-2xl border border-zinc-100 bg-zinc-50/60 hover:bg-zinc-100/60 transition-colors space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="font-bold text-zinc-900 flex items-center gap-1.5">
+                      <Map className="h-3.5 w-3.5 text-zinc-500" /> {p.name}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {p.criticalCount > 0 && (
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          {p.criticalCount} High Risk
+                        </span>
+                      )}
+                      <span className="font-bold text-zinc-900">{p.count} active</span>
+                    </div>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-zinc-200 overflow-hidden">
+                    <div
+                      className="h-full bg-zinc-900 transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="p-3 bg-zinc-50 border-t border-zinc-200 text-xs font-mono text-zinc-500 flex items-center justify-between shrink-0">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> 100% Resident Verified
+            </span>
+            <Link to="/dashboard/puroks" className="text-zinc-900 font-bold hover:underline">
+              View All 8 Purok Profiles →
+            </Link>
+          </div>
         </div>
 
         {/* Priority List */}

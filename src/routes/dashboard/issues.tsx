@@ -11,13 +11,13 @@ import { ChevronDown, Repeat, ShieldAlert, ShieldCheck, Inbox, Search, ListFilte
 export const Route = createFileRoute("/dashboard/issues")({
   head: () => ({
     meta: [
-      { title: "Barangay Balibago Issue Queue — BayanLink" },
+      { title: "Barangay Balibago Issue Queue — Tugnay" },
       {
         name: "description",
         content:
           "Impact-ranked issue queue for Barangay Balibago with transparent lifecycle timelines, recurring clusters, and before/after proof of work.",
       },
-      { property: "og:title", content: "Barangay Balibago Issue Queue — BayanLink" },
+      { property: "og:title", content: "Barangay Balibago Issue Queue — Tugnay" },
       {
         property: "og:description",
         content:
