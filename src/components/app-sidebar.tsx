@@ -33,6 +33,7 @@ import {
 import { useBayanStore, type Language } from "@/lib/store";
 import { useAuth } from "@/lib/auth-store";
 import { TRANSLATIONS } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 import logoImg from "@/assets/logo.png";
 
 export function AppSidebar() {
@@ -139,10 +140,15 @@ export function AppSidebar() {
             <SidebarMenuButton asChild tooltip={t.reportAnIssue}>
               <Link
                 to="/report"
-                className="flex items-center justify-center gap-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white px-3 py-2 transition-colors font-semibold text-xs"
+                className={cn(
+                  "flex items-center rounded-full bg-zinc-900 hover:bg-zinc-800 text-white transition-colors font-semibold text-xs",
+                  collapsed
+                    ? "justify-center w-full py-2 px-0"
+                    : "justify-center gap-2 px-3 py-2"
+                )}
               >
                 <Plus className="h-4 w-4 shrink-0 text-white" />
-                <span className="truncate">{t.reportAnIssue}</span>
+                {!collapsed && <span className="truncate">{t.reportAnIssue}</span>}
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
