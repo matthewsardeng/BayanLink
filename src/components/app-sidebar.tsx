@@ -90,15 +90,15 @@ export function AppSidebar() {
       <SidebarHeader className="p-3">
         <Link to="/" className="flex items-center gap-2.5 p-1 rounded-xl">
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-zinc-900 text-white font-bold text-xs">
-            B
+            T
           </span>
           {!collapsed && (
             <span className="min-w-0">
               <span className="block truncate font-display text-sm font-bold tracking-tight text-zinc-900">
-                BayanLink
+                Tugnay
               </span>
-              <span className="block truncate text-[11px] font-mono text-zinc-500">
-                Balibago Portal
+              <span className="block truncate text-[10px] font-mono text-zinc-500 font-semibold">
+                Tugon at Ugnay · Balibago
               </span>
             </span>
           )}

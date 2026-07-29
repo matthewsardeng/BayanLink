@@ -37,17 +37,17 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Barangay Balibago — Live Barangay Map & Public Services" },
+      { title: "Tugnay — Tugon at Ugnay · Barangay Balibago Portal" },
       {
         name: "description",
         content:
-          "Official civic operating system for Barangay Balibago, Angeles City. Live issue map, resident-verified fixes, public announcements, and online clearance applications.",
+          "Tugnay (Tugon at Ugnay): Official civic operations portal for Barangay Balibago, Angeles City. Live issue map, resident-verified fixes, public announcements, and online clearance applications.",
       },
-      { property: "og:title", content: "Barangay Balibago — Live Map & Services" },
+      { property: "og:title", content: "Tugnay — Tugon at Ugnay · Barangay Balibago" },
       {
         property: "og:description",
         content:
-          "Report issues, track clearances, and verify neighborhood repairs in Barangay Balibago, Angeles City.",
+          "Bawat tugon, panibagong ugnay sa komunidad. Report issues, track clearances, and verify neighborhood repairs in Barangay Balibago, Angeles City.",
       },
     ],
   }),
@@ -102,14 +102,14 @@ function Landing() {
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5 shrink-0">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-900 text-white font-bold text-sm shadow-sm">
-              B
+              T
             </span>
             <div className="hidden min-[380px]:block">
               <span className="block font-display text-base font-bold tracking-tight text-zinc-900 leading-none">
-                BayanLink
+                Tugnay
               </span>
               <span className="block text-[10px] font-mono text-zinc-500 font-semibold mt-0.5">
-                Barangay Balibago, Angeles City
+                Tugon at Ugnay · Balibago
               </span>
             </div>
           </Link>
@@ -187,8 +187,14 @@ function Landing() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             {/* Hero Left Column */}
             <div className="space-y-6">
-              <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-                Serbisyo Publiko · Est. 1961
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
+                  Serbisyo Publiko · Est. 1961
+                </span>
+                <span className="text-zinc-300">|</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-mono font-bold text-zinc-800">
+                  "Bawat tugon, panibagong ugnay sa komunidad."
+                </span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]">
