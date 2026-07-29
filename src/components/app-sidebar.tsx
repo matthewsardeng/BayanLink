@@ -6,9 +6,11 @@ import {
   BarChart3,
   Users,
   FileText,
-  Building2,
   Globe,
   Plus,
+  Building2,
+  LogOut,
+  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,13 +26,16 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useBayanStore, type Language } from "@/lib/store";
+import { useAuth } from "@/lib/auth-store";
 import { TRANSLATIONS } from "@/lib/i18n";
+import { useState } from "react";
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const path = useRouterState({ select: (r) => r.location.pathname });
   const { language, setLanguage } = useBayanStore();
+  const { user, logout } = useAuth();
   const t = TRANSLATIONS[language];
 
   const OPERATIONS = [
@@ -52,7 +57,7 @@ export function AppSidebar() {
         <SidebarMenuButton asChild isActive={active} tooltip={i.title}>
           <Link
             to={i.url}
-            className={`flex items-center gap-2.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2.5 rounded-full px-3 py-2 text-xs font-semibold transition-all ${
               active
                 ? "bg-zinc-900 text-white font-bold"
                 : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
@@ -114,28 +119,55 @@ export function AppSidebar() {
                 to="/report"
                 className="flex items-center justify-center gap-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white px-3 py-2 transition-colors font-semibold text-xs"
               >
-                <Plus className="h-4 w-4 shrink-0" />
+                <Plus className="h-4 w-4 shrink-0 text-white" />
                 <span className="truncate">{t.reportAnIssue}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {!collapsed && (
+        {/* Clean Language Selector (Expanded vs Collapsed) */}
+        {!collapsed ? (
           <div className="px-3 py-1.5 flex items-center justify-between text-xs text-zinc-500 bg-white rounded-full border border-zinc-200">
-            <span className="flex items-center gap-1 font-mono text-[11px]">
-              <Globe className="h-3.5 w-3.5 text-zinc-700" /> Lang
+            <span className="flex items-center gap-1.5 font-mono text-[11px]">
+              <Globe className="h-3.5 w-3.5 text-zinc-700" /> Language
             </span>
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as Language)}
               aria-label="Select Language"
-              className="bg-transparent text-xs text-zinc-900 font-semibold focus:outline-none"
+              className="bg-transparent text-xs text-zinc-900 font-semibold focus:outline-none cursor-pointer"
             >
-              <option value="en">EN</option>
-              <option value="tl">TL</option>
-              <option value="pam">PAM</option>
+              <option value="en">English</option>
+              <option value="tl">Tagalog</option>
+              <option value="pam">Kapampangan</option>
             </select>
+          </div>
+        ) : (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => {
+                  const nextLang: Language = language === "en" ? "tl" : language === "tl" ? "pam" : "en";
+                  setLanguage(nextLang);
+                }}
+                tooltip={`Language: ${language.toUpperCase()}`}
+              >
+                <Globe className="h-4 w-4 text-zinc-700" />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
+
+        {/* User Account / Sign In State */}
+        {user && !collapsed && (
+          <div className="flex items-center justify-between pt-1 text-xs text-zinc-600 font-mono">
+            <span className="flex items-center gap-1.5 truncate">
+              <User className="h-3.5 w-3.5 text-zinc-900" /> {user.name}
+            </span>
+            <button onClick={logout} className="text-rose-600 hover:underline" title="Sign out">
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
           </div>
         )}
       </SidebarFooter>
