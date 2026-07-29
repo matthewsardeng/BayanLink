@@ -89,7 +89,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-zinc-800 bg-zinc-950 text-white font-sans">
-      <SidebarHeader className="p-3">
+      <SidebarHeader className="p-3 bg-zinc-950 text-white">
         <Link to="/" className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-zinc-900 transition-colors">
           <img
             src={logoImg}
