@@ -68,16 +68,61 @@ function Analytics() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
-        <section className="surface-card overflow-hidden border border-zinc-200 rounded-3xl bg-white shadow-sm flex flex-col">
-          <div className="border-b border-zinc-200 px-5 py-4 bg-zinc-50">
-            <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-              <Globe className="h-4 w-4 text-zinc-900" /> Infrastructure Hotspot Map
+        <section className="surface-card p-6 border border-zinc-200 rounded-3xl bg-white shadow-sm space-y-4">
+          <div className="border-b border-zinc-100 pb-3">
+            <h2 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+              <Globe className="h-4 w-4 text-zinc-900" /> Active 2026 Balibago Civic Programs & Health Facilities
             </h2>
             <p className="text-xs text-zinc-500 font-mono mt-0.5">
-              Fields Ave cor. MacArthur Hwy & Astro Park drainage basin distribution.
+              Verified municipal programs and medical centers serving 38,510 residents
             </p>
           </div>
-          <BarangayMap issues={issues} className="h-[320px] sm:h-[400px] rounded-none border-none" />
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* TODA Economic Relief */}
+            <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 space-y-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                Tripartite MOA (Apr 30, 2026)
+              </span>
+              <h3 className="font-bold text-sm text-zinc-900">Fuel-First, Pay-Later Relief</h3>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Spearheaded by Chairman Joseph Ponce for over <strong>2,000 TODA tricycle drivers</strong> across Balibago commercial transit routes.
+              </p>
+            </div>
+
+            {/* Balibago Health Center */}
+            <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 space-y-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                1511 Rossana St., Mt. View
+              </span>
+              <h3 className="font-bold text-sm text-zinc-900">Balibago Health Center</h3>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Mon–Fri 8AM–5PM · Buntis Day, Child Immunization (0-59 mos), and <strong>Dental Consultations every Thursday</strong>.
+              </p>
+            </div>
+
+            {/* DOH RHU IV */}
+            <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 space-y-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">
+                Doña Rosario St.
+              </span>
+              <h3 className="font-bold text-sm text-zinc-900">Angeles RHU IV – Balibago</h3>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Department of Health (DOH) National TB Control Program public DOTS laboratory & diagnostic facility.
+              </p>
+            </div>
+
+            {/* Public Building Safety */}
+            <div className="p-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 space-y-2">
+              <span className="text-[10px] font-mono font-bold uppercase text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                City Building Official Desk
+              </span>
+              <h3 className="font-bold text-sm text-zinc-900">Public Structure Safety Audits</h3>
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                Automated hazard routing with City Engineer's Office for commercial building safety & structural inspection requests.
+              </p>
+            </div>
+          </div>
         </section>
 
         <section className="surface-card p-5 border border-zinc-200 rounded-3xl bg-white shadow-sm">
