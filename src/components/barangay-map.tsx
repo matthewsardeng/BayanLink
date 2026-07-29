@@ -232,63 +232,27 @@ export function BarangayMap({
       )}
       ref={containerRef}
     >
-      {/* Category Filters Bar */}
-      {!compact && (
-        <div className="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-          <div className="flex flex-wrap items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-zinc-200 pointer-events-auto shadow-sm text-xs">
-            <button
-              onClick={() => setCategoryFilter("All")}
-              className={cn(
-                "px-3 py-1 text-xs font-semibold rounded-full transition-colors",
-                categoryFilter === "All"
-                  ? "bg-zinc-900 text-white font-bold"
-                  : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
-              )}
-            >
-              All ({issues.length})
-            </button>
-            {CATEGORIES.map((c) => {
-              const count = issues.filter((i) => i.category === c.name).length;
-              return (
-                <button
-                  key={c.name}
-                  onClick={() => setCategoryFilter(c.name)}
-                  className={cn(
-                    "px-2.5 py-1 text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5",
-                    categoryFilter === c.name
-                      ? "bg-zinc-900 text-white font-bold"
-                      : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
-                  )}
-                >
-                  <CategoryIcon category={c.name} className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{c.name}</span>
-                  <span className="text-[11px] opacity-70">({count})</span>
-                </button>
-              );
-            })}
-          </div>
+      {/* Layer & Zoom Controls in Top Right */}
+      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-zinc-200 shadow-sm pointer-events-auto">
+        {onPick && (
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-700 px-2.5 py-0.5 bg-zinc-100 rounded-full mr-1">
+            <Crosshair className="h-3.5 w-3.5 text-zinc-900" /> Click map to pick location
+          </span>
+        )}
 
-          {/* Layer & Zoom Controls */}
-          <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-zinc-200 pointer-events-auto shadow-sm">
-            {onPick && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-700 px-2.5 py-0.5 bg-zinc-100 rounded-full mr-1">
-                <Crosshair className="h-3.5 w-3.5 text-zinc-900" /> Click map to pick location
-              </span>
-            )}
-
-            <button
-              type="button"
-              onClick={() => setShowTraffic(!showTraffic)}
-              className={cn(
-                "px-2.5 py-1 text-xs font-semibold rounded-full transition-colors flex items-center gap-1",
-                showTraffic
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-zinc-600 hover:bg-zinc-100"
-              )}
-              title="Toggle Traffic & Transit Advisory"
-            >
-              <Car className="h-3.5 w-3.5" /> Traffic
-            </button>
+        <button
+          type="button"
+          onClick={() => setShowTraffic(!showTraffic)}
+          className={cn(
+            "px-2.5 py-1 text-xs font-semibold rounded-full transition-colors flex items-center gap-1",
+            showTraffic
+              ? "bg-amber-600 text-white font-bold"
+              : "text-zinc-600 hover:bg-zinc-100"
+          )}
+          title="Toggle Traffic & Transit Advisory"
+        >
+          <Car className="h-3.5 w-3.5" /> Traffic
+        </button>
 
             <button
               onClick={() => setZoom((z) => Math.min(18, z + 1))}
@@ -316,11 +280,9 @@ export function BarangayMap({
               className="p-1 rounded-full hover:bg-zinc-100 text-zinc-700"
               title="Recenter Map"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-4 w-4" />
             </button>
           </div>
-        </div>
-      )}
 
       {/* Live Weather Widget Overlay */}
       {weather && showWeather && !compact && (

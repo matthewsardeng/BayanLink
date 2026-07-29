@@ -233,39 +233,33 @@ function Landing() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-transparent" />
 
-              {/* Bottom Streaming Ticker Box */}
-              <div className="relative z-10 p-5 space-y-3 font-mono text-xs text-white">
-                <div className="flex items-center justify-between border-b border-white/20 pb-2">
-                  <span className="flex items-center gap-1.5 text-emerald-400 font-bold uppercase text-[10px] tracking-wider">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" /> Live · Recently resolved
+              {/* Bottom Compact Streaming Ticker Box */}
+              <div className="relative z-10 p-3.5 space-y-2 font-mono text-[11px] text-white">
+                <div className="flex items-center justify-between border-b border-white/20 pb-1.5">
+                  <span className="flex items-center gap-1.5 text-emerald-400 font-bold uppercase text-[9px] tracking-wider">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" /> Live · Recently resolved
                   </span>
-                  <span className="text-zinc-400 text-[10px]">Streaming</span>
+                  <span className="text-zinc-400 text-[9px]">Streaming</span>
                 </div>
 
-                <ul className="space-y-2">
-                  <li className="flex items-center justify-between bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/15">
+                <ul className="space-y-1.5">
+                  <li className="flex items-center justify-between bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10 text-[11px]">
                     <div>
                       <span className="font-bold text-white">BAL-2231</span> · <span className="text-zinc-300">Streetlight, Purok 4</span>
                     </div>
-                    <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
-                      ✓ 12m ago
-                    </span>
+                    <span className="text-emerald-400 font-bold text-[10px]">✓ 12m ago</span>
                   </li>
-                  <li className="flex items-center justify-between bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/15">
+                  <li className="flex items-center justify-between bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10 text-[11px]">
                     <div>
                       <span className="font-bold text-white">BAL-2229</span> · <span className="text-zinc-300">Garbage, Purok 7</span>
                     </div>
-                    <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
-                      ✓ 48m ago
-                    </span>
+                    <span className="text-emerald-400 font-bold text-[10px]">✓ 48m ago</span>
                   </li>
-                  <li className="flex items-center justify-between bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/15">
+                  <li className="flex items-center justify-between bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10 text-[11px]">
                     <div>
                       <span className="font-bold text-white">BAL-2224</span> · <span className="text-zinc-300">Water Supply, Purok 2</span>
                     </div>
-                    <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
-                      ✓ 2h ago
-                    </span>
+                    <span className="text-emerald-400 font-bold text-[10px]">✓ 2h ago</span>
                   </li>
                 </ul>
               </div>
