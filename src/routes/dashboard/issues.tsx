@@ -1,12 +1,27 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BARANGAY_INFO, CATEGORIES, type IssueCategory } from "@/data/barangay";
+import { BARANGAY_INFO, CATEGORIES, type IssueCategory, type IssueStatus } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { ImpactMeter, LifecycleTrack, SeverityTag, StatusPill } from "@/components/status";
 import { BeforeAfter } from "@/components/before-after";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Repeat, ShieldAlert, ShieldCheck, Inbox, Search, ListFilter } from "lucide-react";
+import { toast } from "sonner";
+import {
+  ChevronDown,
+  Repeat,
+  ShieldAlert,
+  ShieldCheck,
+  Inbox,
+  Search,
+  ListFilter,
+  Download,
+  CheckSquare,
+  Square,
+  Clock,
+  AlertTriangle,
+  Trash2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/issues")({
   head: () => ({
@@ -29,11 +44,14 @@ export const Route = createFileRoute("/dashboard/issues")({
 });
 
 function Issues() {
-  const { issues, confirmIssue, updateIssueStatus } = useBayanStore();
+  const { issues, confirmIssue, updateIssueStatus, deleteIssue } = useBayanStore();
   const [open, setOpen] = useState<string | null>(issues[0]?.id || null);
   const [sort, setSort] = useState<"impact" | "recent">("impact");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<IssueCategory | "All">("All");
+
+  // Batch Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const filtered = issues.filter((i) => {
     const matchesSearch =
@@ -48,6 +66,72 @@ function Issues() {
   const list = [...filtered].sort((a, b) =>
     sort === "impact" ? b.impact - a.impact : b.reportedAt.localeCompare(a.reportedAt)
   );
+
+  const allSelected = list.length > 0 && selectedIds.length === list.length;
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(list.map((i) => i.id));
+    }
+  };
+
+  const toggleSelectOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((i) => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleBatchStatusUpdate = (status: IssueStatus) => {
+    if (selectedIds.length === 0) return;
+    selectedIds.forEach((id) => {
+      updateIssueStatus(id, status, `Batch status update to ${status} by admin officer`);
+    });
+    toast.success(`Updated status of ${selectedIds.length} tickets to ${status}`);
+    setSelectedIds([]);
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedIds.length === 0) return;
+    const count = selectedIds.length;
+    selectedIds.forEach((id) => deleteIssue(id));
+    toast.success(`Deleted ${count} ticket(s) from queue.`);
+    setSelectedIds([]);
+  };
+
+  const exportToCSV = () => {
+    const targets = selectedIds.length > 0 ? issues.filter((i) => selectedIds.includes(i.id)) : list;
+    if (targets.length === 0) {
+      toast.error("No tickets available to export.");
+      return;
+    }
+    const headers = ["Ticket Code", "Title", "Category", "Purok", "Street", "Status", "Severity", "Impact Score", "Confirmations"];
+    const rows = targets.map((i) => [
+      `"${i.code}"`,
+      `"${i.title.replace(/"/g, '""')}"`,
+      `"${i.category}"`,
+      `"${i.purok}"`,
+      `"${i.street.replace(/"/g, '""')}"`,
+      `"${i.status}"`,
+      `"${i.severity}"`,
+      i.impact,
+      i.confirmations,
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Balibago_Tickets_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success(`Exported ${targets.length} tickets to CSV.`);
+  };
 
   return (
     <div className="space-y-6 font-sans">
@@ -66,19 +150,30 @@ function Issues() {
             </p>
           </div>
 
-          <div className="flex shrink-0 gap-1 rounded-full border border-zinc-200 bg-zinc-50 p-1 text-xs font-mono">
-            {(["impact", "recent"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => setSort(s)}
-                className={cn(
-                  "rounded-full px-3.5 py-1.5 font-semibold capitalize transition-all",
-                  sort === s ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"
-                )}
-              >
-                {s === "impact" ? "Impact Priority" : "Most Recent"}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={exportToCSV}
+              className="rounded-full text-xs font-semibold border-zinc-300 gap-1.5"
+            >
+              <Download className="h-3.5 w-3.5 text-zinc-800" /> Export CSV
+            </Button>
+
+            <div className="flex shrink-0 gap-1 rounded-full border border-zinc-200 bg-zinc-50 p-1 text-xs font-mono">
+              {(["impact", "recent"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSort(s)}
+                  className={cn(
+                    "rounded-full px-3.5 py-1.5 font-semibold capitalize transition-all",
+                    sort === s ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"
+                  )}
+                >
+                  {s === "impact" ? "Impact Priority" : "Most Recent"}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -125,18 +220,83 @@ function Issues() {
         </div>
       </div>
 
+      {/* Batch Operations Toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-zinc-950 text-white p-4 rounded-3xl shadow-xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="flex items-center gap-3 text-xs font-mono font-bold">
+            <button onClick={toggleSelectAll} className="flex items-center gap-1.5 hover:text-emerald-400">
+              {allSelected ? <CheckSquare className="h-4 w-4 text-emerald-400" /> : <Square className="h-4 w-4" />}
+              <span>{selectedIds.length} Selected</span>
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span className="text-zinc-400 text-[11px]">Batch Actions:</span>
+            <Button
+              size="sm"
+              onClick={() => handleBatchStatusUpdate("In Progress")}
+              className="rounded-full text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 px-3 py-1"
+            >
+              Mark In Progress
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => handleBatchStatusUpdate("Completed")}
+              className="rounded-full text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-zinc-950 px-3 py-1"
+            >
+              Mark Completed
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={exportToCSV}
+              className="rounded-full text-xs font-bold text-white border-zinc-700 hover:bg-zinc-800 px-3 py-1"
+            >
+              Export Selected
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleBatchDelete}
+              className="rounded-full text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-3 py-1 gap-1"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Delete Selected
+            </Button>
+          </div>
+        </div>
+      )}
+
       {list.length > 0 ? (
         <div className="space-y-4">
           {list.map((i) => {
             const expanded = open === i.id;
+            const isChecked = selectedIds.includes(i.id);
+            const isOverdue = i.status !== "Completed" && i.status !== "Resident Verified" && i.impact > 85;
+
             return (
               <article key={i.id} className="surface-card overflow-hidden border border-zinc-200 rounded-3xl bg-white shadow-sm transition-all">
-                <button
-                  onClick={() => setOpen(expanded ? null : i.id)}
-                  className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-4 p-5 text-left hover:bg-zinc-50/50 transition-colors"
-                  aria-expanded={expanded}
-                >
-                  <div className="min-w-0">
+                <div className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-5 hover:bg-zinc-50/50 transition-colors">
+                  {/* Item Select Checkbox */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSelectOne(i.id);
+                    }}
+                    className="p-1 rounded text-zinc-400 hover:text-zinc-900 transition-colors focus:outline-none"
+                    aria-label="Select Ticket"
+                  >
+                    {isChecked ? (
+                      <CheckSquare className="h-4 w-4 text-zinc-900" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setOpen(expanded ? null : i.id)}
+                    className="flex-1 min-w-0 text-left cursor-pointer focus:outline-none"
+                    aria-expanded={expanded}
+                  >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs font-bold text-zinc-900">{i.code}</span>
                       <StatusPill status={i.status} />
@@ -150,21 +310,32 @@ function Issues() {
                           <ShieldAlert className="h-3 w-3" /> Emergency Dispatch
                         </span>
                       )}
+                      {isOverdue && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 text-rose-900 px-2.5 py-0.5 text-[10px] font-bold font-mono">
+                          <Clock className="h-3 w-3 text-rose-600 animate-pulse" /> SLA Warning (&lt;12h remaining)
+                        </span>
+                      )}
                     </div>
                     <h2 className="mt-2 text-base font-bold text-zinc-900 truncate">{i.title}</h2>
                     <p className="mt-1 truncate text-xs text-zinc-500 font-mono">
                       {i.category} · {i.street}, {i.purok} · {i.confirmations} resident confirmations · {i.households} households
                     </p>
-                  </div>
+                  </button>
+
                   <div className="flex shrink-0 items-center gap-3">
                     <div className="hidden sm:block">
                       <ImpactMeter score={i.impact} />
                     </div>
-                    <ChevronDown
-                      className={cn("h-5 w-5 text-zinc-400 transition-transform duration-200", expanded && "rotate-180")}
-                    />
+                    <button
+                      onClick={() => setOpen(expanded ? null : i.id)}
+                      className="p-1 text-zinc-400 hover:text-zinc-900 transition-colors"
+                    >
+                      <ChevronDown
+                        className={cn("h-5 w-5 transition-transform duration-200", expanded && "rotate-180")}
+                      />
+                    </button>
                   </div>
-                </button>
+                </div>
 
                 <div className="px-5 pb-4">
                   <LifecycleTrack status={i.status} compact />
@@ -249,6 +420,17 @@ function Issues() {
                               Vote Resolved
                             </Button>
                           )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              deleteIssue(i.id);
+                              toast.success(`Ticket ${i.code} deleted successfully.`);
+                            }}
+                            className="gap-1.5 text-xs font-semibold rounded-full border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 ml-auto"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 text-rose-600" /> Delete Ticket
+                          </Button>
                         </div>
                       </div>
                     </div>

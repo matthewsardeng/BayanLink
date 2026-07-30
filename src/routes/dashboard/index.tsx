@@ -85,7 +85,7 @@ function Overview() {
             <span className="text-xs font-mono text-zinc-500 font-semibold uppercase tracking-wider">
               Barangay Balibago Operations
             </span>
-            <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 mt-1">
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 mt-1">
               Public Operations Dashboard
             </h1>
             <p className="text-xs text-zinc-500 font-mono mt-0.5">
@@ -95,7 +95,7 @@ function Overview() {
 
           <div className="flex flex-wrap items-center gap-2">
             <Button asChild size="sm" variant="outline" className="rounded-full text-xs font-semibold border-zinc-300">
-              <Link to="/dashboard/map">Explore Live Map ↗</Link>
+              <Link to="/dashboard/map">Explore Live Map</Link>
             </Button>
             <Button asChild size="sm" className="rounded-full text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white px-4">
               <Link to="/report">File New Concern</Link>

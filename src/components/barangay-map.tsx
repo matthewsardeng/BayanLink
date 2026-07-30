@@ -434,7 +434,7 @@ export function BarangayMap({
           const lat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
 
           if (!isWithinBalibago(lat, lng)) {
-            setBoundsWarning("⚠️ Selected point is outside Barangay Balibago jurisdiction bounds. Please pick a location within Balibago.");
+            setBoundsWarning("Selected point is outside Barangay Balibago jurisdiction bounds. Please pick a location within Balibago.");
             setTimeout(() => setBoundsWarning(null), 4000);
             return;
           }
@@ -490,7 +490,7 @@ export function BarangayMap({
           })()}
         </div>
 
-        {/* Interactive Issue Pins */}
+        {/* Interactive Issue Pins & Popups */}
         {filteredIssues.map((it) => {
           const mx = lngToWorldX(it.lng || BARANGAY_INFO.coordinates.lng, zoom) - left;
           const my = latToWorldY(it.lat || BARANGAY_INFO.coordinates.lat, zoom) - top;
@@ -503,36 +503,82 @@ export function BarangayMap({
           }
 
           return (
-            <button
+            <div
               key={it.id}
-              type="button"
-              onPointerDown={(e) => {
-                e.stopPropagation();
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePinClick(it.id);
-              }}
-              onMouseEnter={() => setHoveredId(it.id)}
-              onMouseLeave={() => setHoveredId(null)}
               style={{ left: mx, top: my }}
-              aria-label={`${it.category}: ${it.title}`}
               className={cn(
-                "absolute -translate-x-1/2 -translate-y-full focus:outline-none transition-transform duration-150 pointer-events-auto cursor-pointer",
-                active ? "z-30 scale-110" : "z-10 hover:scale-105"
+                "absolute -translate-x-1/2 -translate-y-full transition-transform duration-150 pointer-events-auto",
+                active ? "z-30 scale-110" : "z-10"
               )}
             >
-              <div
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-full border-2 border-white text-zinc-950 shadow-md font-bold text-xs transition-all",
-                  active ? "ring-2 ring-zinc-900 shadow-lg scale-105" : ""
-                )}
-                style={{ background: categoryColor(it.category) }}
+              <button
+                type="button"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePinClick(it.id);
+                }}
+                onMouseEnter={() => setHoveredId(it.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                aria-label={`${it.category}: ${it.title}`}
+                className="cursor-pointer focus:outline-none"
               >
-                <CategoryIcon category={it.category} className="h-3.5 w-3.5 text-zinc-950 stroke-[2.5]" />
-                {!compact && <span className="text-[11px] font-mono">{it.code}</span>}
-              </div>
-            </button>
+                <div
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded-full border-2 border-white text-zinc-950 shadow-md font-bold text-xs transition-all",
+                    active ? "ring-2 ring-zinc-900 shadow-lg scale-105" : ""
+                  )}
+                  style={{ background: categoryColor(it.category) }}
+                >
+                  <CategoryIcon category={it.category} className="h-3.5 w-3.5 text-zinc-950 stroke-[2.5]" />
+                  {!compact && <span className="text-[11px] font-mono">{it.code}</span>}
+                </div>
+              </button>
+
+              {/* Rich Popup Preview Card when selected */}
+              {isSelected && !compact && (
+                <div
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-zinc-200 shadow-xl text-xs text-zinc-900 z-50 pointer-events-auto animate-in fade-in zoom-in-95 duration-150"
+                >
+                  <div className="flex items-start justify-between gap-1 mb-1.5">
+                    <div>
+                      <span className="font-mono text-[10px] font-bold text-zinc-400 block">{it.code} · {it.purok}</span>
+                      <h4 className="font-bold text-zinc-900 leading-tight">{it.title}</h4>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInternalSelectedId(null);
+                        onSelect?.("");
+                      }}
+                      className="text-zinc-400 hover:text-zinc-700 p-0.5"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2 my-2">
+                    <StatusPill status={it.status} />
+                    <span className="text-[10px] text-zinc-500 font-mono">{it.reportedAt}</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-600 line-clamp-2 mb-2 leading-snug">{it.summary}</p>
+                  <div className="flex items-center justify-between border-t border-zinc-100 pt-2 text-[10px]">
+                    <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3" /> {it.confirmations} verified
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        confirmIssue(it.id);
+                      }}
+                      className="px-2.5 py-1 bg-zinc-900 text-white rounded-full font-bold hover:bg-zinc-800 transition-colors"
+                    >
+                      Verify Fix
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           );
         })}
 

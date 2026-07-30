@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { BARANGAY_INFO, BARANGAY_OFFICIALS, ISSUES, SERVICES, PUROKS, CATEGORIES, type IssueCategory } from "@/data/barangay";
 import { useBayanStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth-store";
@@ -41,6 +42,7 @@ import {
   Zap,
   Trash2,
   HeartPulse,
+  Megaphone,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -140,19 +142,32 @@ function Landing() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Non-breaking compact Language Selector */}
-            <div className="flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-mono">
-              <Globe className="h-3.5 w-3.5 text-zinc-700 shrink-0" />
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as any)}
-                aria-label="Select Language"
-                className="bg-transparent text-xs text-zinc-900 font-bold outline-none cursor-pointer pr-1"
-              >
-                <option value="en">EN</option>
-                <option value="tl">TL</option>
-                <option value="pam">PAM</option>
-              </select>
+            {/* Segmented Language Switcher */}
+            <div className="flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-100/80 p-0.5 text-xs font-mono">
+              {(["en", "tl", "pam"] as const).map((lang) => (
+                <button
+                  key={lang}
+                  type="button"
+                  onClick={() => {
+                    setLanguage(lang);
+                    toast.success(
+                      lang === "en"
+                        ? "Language set to English"
+                        : lang === "tl"
+                        ? "Wika set sa Tagalog"
+                        : "Amanung Kapampangan"
+                    );
+                  }}
+                  className={cn(
+                    "px-2.5 py-1 rounded-full text-[11px] font-bold uppercase transition-all",
+                    language === lang
+                      ? "bg-zinc-900 text-white shadow-xs"
+                      : "text-zinc-600 hover:text-zinc-900"
+                  )}
+                >
+                  {lang === "pam" ? "KAP" : lang}
+                </button>
+              ))}
             </div>
 
             {user ? (
@@ -179,7 +194,7 @@ function Landing() {
             )}
 
             <Button asChild size="sm" className="rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-4 shrink-0">
-              <Link to="/report">File Concern ↗</Link>
+              <Link to="/report">File Concern</Link>
             </Button>
           </div>
         </div>
@@ -869,6 +884,15 @@ function Landing() {
           </div>
         </div>
       )}
+
+      {/* Mobile Floating Action Button (FAB) for Quick Issue Reporting */}
+      <Link
+        to="/report"
+        className="fixed bottom-6 right-6 z-40 flex sm:hidden items-center gap-2 bg-zinc-950 text-white font-bold text-xs px-5 py-3.5 rounded-full shadow-2xl border border-zinc-800 animate-in fade-in slide-in-from-bottom-4 duration-200 hover:scale-105 active:scale-95"
+      >
+        <Megaphone className="h-4 w-4 text-emerald-400 animate-pulse" />
+        <span>Report Issue</span>
+      </Link>
     </div>
   );
 }

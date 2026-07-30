@@ -58,13 +58,13 @@ function MapView() {
   return (
     <div className="space-y-4 font-sans">
       {/* Standardized Header Card */}
-      <div className="surface-card p-5 border border-zinc-200 bg-white rounded-3xl space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="surface-card p-6 border border-zinc-200 bg-white rounded-3xl">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="text-[11px] font-mono text-zinc-500 font-semibold uppercase tracking-wider">
+            <span className="text-xs font-mono text-zinc-500 font-semibold uppercase tracking-wider">
               Geospatial Operations & GIS Map
             </span>
-            <h1 className="text-xl font-extrabold tracking-tight text-zinc-900 mt-0.5">
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 mt-1">
               Barangay Balibago Live Issue Map
             </h1>
             <p className="text-xs text-zinc-500 font-mono mt-0.5">

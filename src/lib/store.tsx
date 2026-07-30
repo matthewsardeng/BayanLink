@@ -49,6 +49,7 @@ type BayanStoreContextType = {
   }) => Promise<Issue>;
   confirmIssue: (id: string) => Promise<void>;
   updateIssueStatus: (id: string, status: IssueStatus, note: string) => Promise<void>;
+  deleteIssue: (id: string) => Promise<void>;
   voteProposal: (id: string) => Promise<void>;
   addProposal: (data: { title: string; purok: string; blurb: string; goal: number }) => Promise<Proposal>;
   applyForService: (data: {
@@ -404,6 +405,10 @@ export function BayanStoreProvider({ children }: { children: React.ReactNode }) 
     return newApp;
   };
 
+  const deleteIssue = async (id: string) => {
+    setIssues((prev) => prev.filter((i) => i.id !== id));
+  };
+
   return (
     <BayanStoreContext.Provider
       value={{
@@ -416,6 +421,7 @@ export function BayanStoreProvider({ children }: { children: React.ReactNode }) 
         addIssue,
         confirmIssue,
         updateIssueStatus,
+        deleteIssue,
         voteProposal,
         addProposal,
         applyForService,

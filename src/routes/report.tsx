@@ -11,6 +11,8 @@ import { BarangayMap, CategoryIcon } from "@/components/barangay-map";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { StatusPill } from "@/components/status";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -23,6 +25,11 @@ import {
   ArrowRight,
   Sparkles,
   SearchCheck,
+  Copy,
+  Navigation,
+  Loader2,
+  Check,
+  AlertTriangle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/report")({
@@ -75,9 +82,12 @@ function Report() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedCategory, setSelectedCategory] = useState<IssueCategory>("Safety Hazard");
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [pickedCoords, setPickedCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [smsOptIn, setSmsOptIn] = useState(true);
+  const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Ticket Lookup State
@@ -106,14 +116,51 @@ function Report() {
 
   const urgent = /wire|sunog|fire|kuryente|baha|flood|aksidente|accident|kriminal|sakuna/i.test(text);
 
-  const handleFileDrop = (file: File) => {
-    if (file && file.type.startsWith("image/")) {
+  const handleFileDrop = (files: FileList | File[]) => {
+    const valid = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    if (valid.length === 0) return;
+    if (photos.length >= 3) {
+      toast.error("Maximum 3 photos allowed per report.");
+      return;
+    }
+    valid.slice(0, 3 - photos.length).forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPhotoPreview(e.target?.result as string);
+        const res = e.target?.result as string;
+        if (res) {
+          setPhotos((prev) => [...prev, res]);
+          toast.success("Photo attached successfully.");
+        }
       };
       reader.readAsDataURL(file);
+    });
+  };
+
+  const handleUseGPSLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser.");
+      return;
     }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setIsLocating(false);
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        handlePickLocation(lat, lng);
+        toast.success(`GPS Location locked: ${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+      },
+      (err) => {
+        setIsLocating(false);
+        console.warn("GPS location error:", err.message);
+        // Fallback to Balibago center if user denies permission or stays in local dev
+        const fallbackLat = 15.1663;
+        const fallbackLng = 120.5901;
+        handlePickLocation(fallbackLat, fallbackLng);
+        toast.info("Using Barangay Balibago Municipal Center coordinates.");
+      },
+      { timeout: 8000 }
+    );
   };
 
   const handlePickLocation = (lat: number, lng: number) => {
@@ -134,11 +181,12 @@ function Report() {
       street: data.street,
       summary: data.summary,
       anonymous: data.anonymous,
-      imageUrl: photoPreview || undefined,
+      imageUrl: photos[0] || undefined,
     });
 
     setSubmittedCode(created.code);
     setStep(4);
+    toast.success("Report registered successfully!");
   };
 
   const handleLookup = (e: React.FormEvent) => {
@@ -149,7 +197,7 @@ function Report() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-zinc-900 font-sans">
-      <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <Link
             to="/"
@@ -186,6 +234,44 @@ function Report() {
           </form>
         </div>
 
+        {/* Sticky Step Progress Header Bar */}
+        <div className="mt-4 mb-6 rounded-full border border-zinc-200 bg-white p-2 shadow-xs flex items-center justify-between gap-2 text-xs font-semibold text-zinc-600">
+          {(
+            [
+              { num: 1, label: "Category" },
+              { num: 2, label: "Location Map" },
+              { num: 3, label: "Details & Evidence" },
+              { num: 4, label: "Receipt" },
+            ] as const
+          ).map((s) => (
+            <div
+              key={s.num}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full transition-all text-[11px]",
+                step === s.num
+                  ? "bg-zinc-950 text-white font-bold shadow-xs"
+                  : step > s.num
+                  ? "bg-emerald-50 text-emerald-800 font-semibold"
+                  : "text-zinc-400"
+              )}
+            >
+              <span
+                className={cn(
+                  "grid h-4 w-4 place-items-center rounded-full text-[10px] font-bold font-mono",
+                  step === s.num
+                    ? "bg-white text-zinc-950"
+                    : step > s.num
+                    ? "bg-emerald-600 text-white"
+                    : "bg-zinc-200 text-zinc-600"
+                )}
+              >
+                {step > s.num ? <Check className="h-2.5 w-2.5" /> : s.num}
+              </span>
+              <span className="hidden sm:inline">{s.label}</span>
+            </div>
+          ))}
+        </div>
+
         {/* Found Ticket Card */}
         {foundTicket && (
           <div className="mt-4 surface-card p-4 border border-zinc-200 bg-white rounded-2xl space-y-2">
@@ -207,7 +293,7 @@ function Report() {
         )}
 
         {/* Wizard Steps Layout */}
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="surface-card p-6 space-y-6 border border-zinc-200 bg-white rounded-3xl"
@@ -216,19 +302,19 @@ function Report() {
             {step === 1 && (
               <div className="space-y-4">
                 <h2 className="text-sm font-bold text-zinc-900">Select Concern Category</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {CATEGORIES.map((c) => (
                     <button
                       key={c.name}
                       type="button"
                       onClick={() => setSelectedCategory(c.name)}
-                      className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border transition-all text-xs font-semibold text-center ${
+                      className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all text-xs font-semibold text-center ${
                         selectedCategory === c.name
-                          ? "border-zinc-900 bg-zinc-900 text-white font-bold"
+                          ? "border-zinc-900 bg-zinc-900 text-white font-bold shadow-md scale-[1.02]"
                           : "border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-800"
                       }`}
                     >
-                      <CategoryIcon category={c.name} className="h-5 w-5 mb-1.5" />
+                      <CategoryIcon category={c.name} className="h-6 w-6 mb-2" />
                       <span>{c.name}</span>
                     </button>
                   ))}
@@ -239,60 +325,92 @@ function Report() {
                   onClick={() => setStep(2)}
                   className="w-full rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs mt-4"
                 >
-                  Continue to Location <ArrowRight className="h-4 w-4 ml-1" />
+                  Continue to Location Map <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
             )}
 
-            {/* Step 2: Location Selection */}
+            {/* Step 2: Location Selection & Large GIS Map */}
             {step === 2 && (
               <div className="space-y-4">
-                <h2 className="text-sm font-bold text-zinc-900">Select Barangay Balibago Zone & Location</h2>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
-                    {t.zoneLabel}
-                  </label>
-                  <select
-                    {...register("purok")}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setValue("purok", val);
-                      const coords = PUROK_COORDINATES[val];
-                      if (coords) {
-                        setMapCenter(coords);
-                        setPickedCoords(coords);
-                        setValue("street", `Center of ${val} (${coords.lat.toFixed(4)}°, ${coords.lng.toFixed(4)}°)`);
-                      }
-                    }}
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm font-medium outline-none text-zinc-900"
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <h2 className="text-sm font-bold text-zinc-900">Select Barangay Balibago Zone & Precise Location</h2>
+                    <p className="text-xs text-zinc-500 mt-0.5">Click or tap anywhere on the large interactive map below to set pin.</p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={handleUseGPSLocation}
+                    disabled={isLocating}
+                    className="rounded-full text-xs font-semibold border-zinc-300 flex items-center gap-1.5 shrink-0"
                   >
-                    {PUROKS.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
+                    {isLocating ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-700" />
+                    ) : (
+                      <Navigation className="h-3.5 w-3.5 text-sky-600" />
+                    )}
+                    <span>{isLocating ? "Locating..." : "Use Current GPS"}</span>
+                  </Button>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
-                    Street / Landmark Coordinates
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Click map below or type landmark..."
-                    {...register("street")}
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none text-zinc-900"
-                  />
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
+                      {t.zoneLabel}
+                    </label>
+                    <select
+                      {...register("purok")}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setValue("purok", val);
+                        const coords = PUROK_COORDINATES[val];
+                        if (coords) {
+                          setMapCenter(coords);
+                          setPickedCoords(coords);
+                          setValue("street", `Center of ${val} (${coords.lat.toFixed(4)}°, ${coords.lng.toFixed(4)}°)`);
+                        }
+                      }}
+                      className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm font-medium outline-none text-zinc-900"
+                    >
+                      {PUROKS.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
+                      Street / Landmark Coordinates
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Click map below or type landmark..."
+                      {...register("street")}
+                      className="w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none text-zinc-900"
+                    />
+                  </div>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-zinc-200">
+                {/* Prominent High-Impact Interactive Map View (h-[500px]) */}
+                <div className="overflow-hidden rounded-3xl border-2 border-zinc-900 shadow-lg relative">
+                  <div className="bg-zinc-900 text-white px-4 py-2 text-xs font-mono font-bold flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-emerald-400" /> Interactive Balibago Location Picker
+                    </span>
+                    <span className="text-[11px] text-zinc-400 font-normal">
+                      {pickedCoords ? `${pickedCoords.lat.toFixed(4)}°, ${pickedCoords.lng.toFixed(4)}°` : "Click map to set pin"}
+                    </span>
+                  </div>
                   <BarangayMap
                     issues={issues}
                     onPick={handlePickLocation}
                     pickedCoords={pickedCoords}
                     mapCenter={mapCenter}
-                    className="h-[260px]"
+                    className="h-[500px]"
                   />
                 </div>
 
@@ -317,64 +435,107 @@ function Report() {
                 <h2 className="text-sm font-bold text-zinc-900">Describe Issue & Attach Evidence</h2>
 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
-                    {t.describeIssueLabel}
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                      {t.describeIssueLabel}
+                    </label>
+                    <span className="text-[11px] font-mono text-zinc-500">Min. 10 characters</span>
+                  </div>
                   <textarea
                     {...register("summary")}
-                    rows={4}
+                    rows={5}
                     maxLength={1000}
                     placeholder={t.describePlaceholder}
-                    className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm outline-none text-zinc-900 leading-relaxed"
+                    className="w-full resize-none rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm outline-none text-zinc-900 leading-relaxed focus:ring-2 focus:ring-zinc-900 transition-all"
                   />
-                  {errors.summary && <p className="mt-1 text-xs text-rose-600">{errors.summary.message}</p>}
+
+                  {/* Live Minimum Character Counter Feedback */}
+                  <div className="flex items-center justify-between text-xs mt-1.5 font-mono">
+                    <div className="flex items-center gap-1.5">
+                      {text.trim().length >= 10 ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[11px]">
+                          <Check className="h-3 w-3 text-emerald-600" /> Minimum requirement met
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 text-[11px]">
+                          <AlertTriangle className="h-3 w-3 text-amber-600" /> Needs {10 - text.trim().length} more character(s)
+                        </span>
+                      )}
+                    </div>
+                    <span className={cn("text-[11px]", text.trim().length >= 10 ? "text-zinc-500 font-semibold" : "text-amber-700 font-bold")}>
+                      {text.trim().length} / 10 min · {text.length} / 1000 max
+                    </span>
+                  </div>
+                  {errors.summary && <p className="mt-1 text-xs text-rose-600 font-semibold">{errors.summary.message}</p>}
                 </div>
 
-                {/* Photo Upload */}
+                {/* Multi-Photo Upload */}
                 <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
-                    Photo Evidence (Optional)
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                      Photo Evidence ({photos.length}/3 photos)
+                    </label>
+                  </div>
                   <input
                     type="file"
                     ref={fileInputRef}
                     accept="image/*"
+                    multiple
                     className="hidden"
                     onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileDrop(file);
+                      if (e.target.files) handleFileDrop(e.target.files);
                     }}
                   />
 
-                  {!photoPreview ? (
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 p-5 text-center cursor-pointer hover:bg-zinc-50 transition-colors"
-                    >
-                      <UploadCloud className="h-6 w-6 text-zinc-400 mb-1" />
-                      <p className="text-xs font-semibold text-zinc-900">Click to upload photo evidence</p>
-                      <p className="text-[11px] text-zinc-500 mt-0.5">Faces & license plates automatically blurred</p>
-                    </div>
-                  ) : (
-                    <div className="relative rounded-xl overflow-hidden border border-zinc-200 max-w-[200px]">
-                      <img src={photoPreview} alt="Preview" className="h-32 w-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => setPhotoPreview(null)}
-                        className="absolute top-1.5 right-1.5 rounded-full bg-zinc-900/80 p-1 text-white hover:bg-zinc-900"
+                  <div className="grid grid-cols-3 gap-2">
+                    {photos.map((src, idx) => (
+                      <div key={idx} className="relative rounded-xl overflow-hidden border border-zinc-200 group">
+                        <img src={src} alt={`Evidence ${idx + 1}`} className="h-24 w-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPhotos(photos.filter((_, i) => i !== idx));
+                            toast.info("Photo removed.");
+                          }}
+                          className="absolute top-1 right-1 rounded-full bg-zinc-950/80 p-1 text-white hover:bg-zinc-950"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {photos.length < 3 && (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-300 h-24 p-2 text-center cursor-pointer hover:bg-zinc-50 transition-colors"
                       >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  )}
+                        <UploadCloud className="h-5 w-5 text-zinc-400 mb-1" />
+                        <p className="text-[11px] font-semibold text-zinc-900">Add Photo</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <label className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 p-3.5 bg-zinc-50">
+                {/* Clean Monochrome Anonymous Toggle Container */}
+                <label
+                  htmlFor="anonymous-toggle"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 p-4 bg-zinc-50/80 cursor-pointer hover:bg-zinc-100/80 transition-colors select-none"
+                >
                   <span className="min-w-0 text-xs">
-                    <span className="block font-bold text-zinc-900">{t.reportAnonymous}</span>
-                    <span className="block text-zinc-500 mt-0.5">Receive a tracking code to check status</span>
+                    <span className="flex items-center gap-1.5 font-bold text-zinc-900 text-sm">
+                      {anon ? "Report Anonymously" : "Identified Resident Report"}
+                    </span>
+                    <span className="block text-zinc-500 mt-1 leading-relaxed text-[11px]">
+                      {anon
+                        ? "Your identity is completely hidden from public view. A unique ticket tracking code will be generated."
+                        : `Submitting as ${user?.name || "Verified Resident"} (${user?.purok || selectedPurok}). Officials can reach out for updates.`}
+                    </span>
                   </span>
-                  <Switch checked={anon} onCheckedChange={(val) => setValue("anonymous", val)} />
+                  <Switch
+                    id="anonymous-toggle"
+                    checked={anon}
+                    onCheckedChange={(val) => setValue("anonymous", val)}
+                  />
                 </label>
 
                 <div className="flex gap-2 pt-2">
@@ -384,7 +545,7 @@ function Report() {
                   <Button
                     type="submit"
                     disabled={isSubmitting || text.trim().length < 10}
-                    className="flex-1 rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs"
+                    className="flex-1 rounded-full font-semibold bg-zinc-900 hover:bg-zinc-800 text-white text-xs disabled:opacity-50"
                   >
                     Submit Report & Generate Code
                   </Button>
@@ -394,21 +555,44 @@ function Report() {
 
             {/* Step 4: Confirmation Receipt */}
             {step === 4 && submittedCode && (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-xs text-emerald-900 space-y-4 text-center">
-                <div className="grid h-12 w-12 place-items-center rounded-full bg-emerald-600 text-white mx-auto">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-6 text-xs text-emerald-900 space-y-4 text-center">
+                <div className="grid h-12 w-12 place-items-center rounded-full bg-emerald-600 text-white mx-auto shadow-md">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
-                <h2 className="text-base font-bold text-emerald-900">Report Successfully Registered</h2>
-                <p className="font-mono text-zinc-800 text-sm">
-                  Tracking Code: <strong>{submittedCode}</strong>
-                </p>
-                <p className="text-zinc-600 max-w-xs mx-auto leading-relaxed">
+                <h2 className="text-base font-bold text-emerald-950">Report Successfully Registered</h2>
+                
+                <div className="flex items-center justify-center gap-2 bg-white/90 p-3 rounded-xl border border-emerald-200 shadow-xs max-w-xs mx-auto">
+                  <span className="font-mono text-zinc-900 text-sm font-bold tracking-wider">{submittedCode}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(submittedCode);
+                      setCopied(true);
+                      toast.success("Ticket tracking code copied to clipboard!");
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors"
+                    title="Copy Code"
+                  >
+                    {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+                  </button>
+                </div>
+
+                <p className="text-zinc-700 max-w-xs mx-auto leading-relaxed text-xs">
                   Your report has been logged and assigned to Barangay Public Works. Nearby residents can now confirm resolution.
                 </p>
+
+                <div className="pt-2 border-t border-emerald-200/60 max-w-xs mx-auto text-left">
+                  <label className="flex items-center justify-between gap-2 text-[11px] text-emerald-900 font-semibold cursor-pointer">
+                    <span>SMS / Email Resolution Notifications</span>
+                    <Switch checked={smsOptIn} onCheckedChange={setSmsOptIn} />
+                  </label>
+                </div>
+
                 <div className="flex gap-2 justify-center pt-2">
                   <Button
                     size="sm"
-                    className="rounded-full text-xs font-semibold bg-emerald-800 hover:bg-emerald-900 text-white px-6"
+                    className="rounded-full text-xs font-semibold bg-emerald-900 hover:bg-emerald-950 text-white px-6"
                     onClick={() => navigate({ to: "/dashboard/issues" })}
                   >
                     View in Queue
@@ -419,6 +603,7 @@ function Report() {
                     onClick={() => {
                       setStep(1);
                       setSubmittedCode(null);
+                      setPhotos([]);
                     }}
                   >
                     Report Another

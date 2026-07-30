@@ -133,6 +133,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 import { BayanStoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth-store";
+import { Toaster } from "sonner";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
@@ -143,6 +144,7 @@ function RootComponent() {
         <BayanStoreProvider>
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
+          <Toaster position="bottom-right" richColors />
         </BayanStoreProvider>
       </AuthProvider>
     </QueryClientProvider>
